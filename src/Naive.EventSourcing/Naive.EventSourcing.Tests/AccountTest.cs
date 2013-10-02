@@ -9,6 +9,13 @@ namespace Naive.EventSourcing.Tests
     {
         private Account _account;
         
+        [TestInitialize]
+        public void Setup()
+        {
+            GivenANewAccount();
+            WhenIWithdrawTwenty();
+        }
+
         public void GivenANewAccount()
         {
             _account = new Account(Guid.NewGuid());
@@ -19,48 +26,42 @@ namespace Naive.EventSourcing.Tests
             _account.Withdraw(50);
         }
 
+        [TestMethod]
         public void ThenTwentyShouldBeWithdrawn()
         {
             Assert.IsTrue(_account.RecordedEvents().Contains(new AmountWithdrawn(50)));
-        }
-
-        [TestMethod]
-        public void Execute()
-        {
-            GivenANewAccount();
-            WhenIWithdrawTwenty();
-            ThenTwentyShouldBeWithdrawn();
-        }
+        }      
     }
 
     [TestClass]
     public class WhenInitializingEverythingIsInitialized
     {
         private Account _account;
+        private Guid _accountId;
 
-        public void GivenANewAccount(Guid accountId)
+        [TestInitialize]
+        public void Initialize() 
         {
-            _account = new Account(accountId);
+            _accountId = Guid.NewGuid();
+
+            GivenANewAccount();
         }
 
-        public void ThenTheIdIsSet(Guid accountId)
+        public void GivenANewAccount()
         {
-            Assert.AreEqual(accountId, _account.Id);
-        }
-
-        public void ThenTheRecordedEventsAreEmpty()
-        {
-            Assert.AreEqual(0, _account.RecordedEvents().Count());
+            _account = new Account(_accountId);
         }
 
         [TestMethod]
-        public void Execute()
+        public void ThenTheIdIsSet()
         {
-            var accountId = Guid.NewGuid();
-
-            GivenANewAccount(accountId);
-            ThenTheIdIsSet(accountId);
-            ThenTheRecordedEventsAreEmpty();
+            Assert.AreEqual(_accountId, _account.Id);
         }
+
+        [TestMethod]
+        public void ThenTheRecordedEventsAreEmpty()
+        {
+            Assert.AreEqual(0, _account.RecordedEvents().Count());
+        }      
     }
 }
