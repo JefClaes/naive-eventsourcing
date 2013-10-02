@@ -44,7 +44,6 @@
     <Compile Include="EventRecorder.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="InMemoryEventStore.cs" />
-    <Compile Include="EventStoreTest.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="IEventStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
