@@ -7,12 +7,14 @@ namespace Naive.EventSourcing
 {
     public class Account
     {
+        private Guid _id;
         private int _amount = 0;
 
         private readonly EventRecorder _eventRecorder;
 
-        public Account()
+        public Account(Guid id)
         {
+            _id = id;
             _eventRecorder = new EventRecorder();
         }
 
@@ -21,6 +23,8 @@ namespace Naive.EventSourcing
             foreach (var @event in events)
                 When((dynamic)@event);
         }
+
+        public Guid Id { get { return _id; } }
 
         public IEnumerable<IEvent> RecordedEvents()
         {
