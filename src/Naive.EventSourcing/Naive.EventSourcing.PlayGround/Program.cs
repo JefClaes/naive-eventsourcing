@@ -20,7 +20,7 @@ namespace Naive.EventSourcing.PlayGround
             foreach (var @event in account.RecordedEvents())
                 Console.WriteLine(@event);
 
-            var eventStore = new DiskEventStore(@"C:\EventStore.txt");
+            var eventStore = new FileEventStore(@"C:\EventStore.txt");
             eventStore.Append(accountId, account.RecordedEvents());
 
             Console.ReadLine();
