@@ -59,7 +59,7 @@ namespace Naive.EventSourcing.Tests
         }
 
         [TestMethod]
-        public void ThenTheRecordedEventsAreEmpty()
+        public void ThenNothingHappened()
         {
             Assert.AreEqual(0, _account.RecordedEvents().Count());
         }      
