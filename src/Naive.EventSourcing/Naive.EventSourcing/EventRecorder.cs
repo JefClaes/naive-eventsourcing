@@ -14,9 +14,9 @@ namespace Naive.EventSourcing
             _events.Add(@event);
         }
 
-        public IEnumerable<IEvent> RecordedEvents()
+        public EventStream RecordedEvents()
         {
-            return _events;
+            return new EventStream(_events);
         }
     }
 }

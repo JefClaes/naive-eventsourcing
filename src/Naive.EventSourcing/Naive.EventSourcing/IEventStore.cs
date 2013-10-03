@@ -7,8 +7,8 @@ namespace Naive.EventSourcing
 {
     public interface IEventStore
     {
-        IEnumerable<IEvent> GetStream(Guid id);
+        EventStream GetStream(Guid id);
 
-        void AppendToStream(Guid id, IEnumerable<IEvent> events);
+        void Append(Guid id, EventStream eventStream);
     }
 }

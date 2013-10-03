@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Naive.EventSourcing.Tests
 {
     [TestClass]
-    public class WhenGettingStreamAfterAppending
+    public class WhenGettingStreamAfterAppendingForTheFirstTime
     {
         private IEventStore _eventStore;
         private Guid _aggregateId;
@@ -34,7 +34,7 @@ namespace Naive.EventSourcing.Tests
 
         public void GivenSomeEventsAppended()
         {
-            _eventStore.AppendToStream(_aggregateId, new List<TestEvent>() { new TestEvent(), new TestEvent() });
+            _eventStore.Append(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
         }
 
         public void WhenGettingTheEventStream()
@@ -46,6 +46,57 @@ namespace Naive.EventSourcing.Tests
         public void TwoEventsAreReturned()
         {
             Assert.AreEqual(2, _sut.Count());
+        }
+
+        private class TestEvent : IEvent { }
+    }
+
+    [TestClass]
+    public class WhenGettingStreamAfterAppendingForTheSecondTime
+    {
+        private IEventStore _eventStore;
+        private Guid _aggregateId;
+
+        private IEnumerable<IEvent> _sut;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            GivenNewEventStore();
+            GivenSomeEventsAppended();
+            GivenSomeMoreEventsAppended();
+            WhenGettingTheEventStream();
+        }
+
+        public void GivenAggregateId()
+        {
+            _aggregateId = Guid.NewGuid();
+        }
+
+        public void GivenNewEventStore()
+        {
+            _eventStore = new InMemoryEventStore();
+        }
+
+        public void GivenSomeEventsAppended()
+        {
+            _eventStore.Append(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
+        }
+
+        public void GivenSomeMoreEventsAppended()
+        {
+            _eventStore.Append(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
+        }
+
+        public void WhenGettingTheEventStream()
+        {
+            _sut = _eventStore.GetStream(_aggregateId);
+        }
+
+        [TestMethod]
+        public void FourEventsAreReturned()
+        {
+            Assert.AreEqual(4, _sut.Count());
         }
 
         private class TestEvent : IEvent { }

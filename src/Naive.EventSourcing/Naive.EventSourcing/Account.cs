@@ -18,15 +18,15 @@ namespace Naive.EventSourcing
             _eventRecorder = new EventRecorder();
         }
 
-        public void Initialize(IEnumerable<IEvent> events)
+        public void Initialize(EventStream eventStream)
         {
-            foreach (var @event in events)
+            foreach (var @event in eventStream)
                 When((dynamic)@event);
         }
 
         public Guid Id { get { return _id; } }
 
-        public IEnumerable<IEvent> RecordedEvents()
+        public EventStream RecordedEvents()
         {
             return _eventRecorder.RecordedEvents();
         }

@@ -8,19 +8,26 @@ namespace Naive.EventSourcing
 {
     public class InMemoryEventStore : IEventStore
     {
-        private readonly ConcurrentDictionary<Guid, List<IEvent>> _state = new ConcurrentDictionary<Guid, List<IEvent>>();
+        private readonly ConcurrentDictionary<Guid, EventStream> _state = new ConcurrentDictionary<Guid, EventStream>();
 
-        public IEnumerable<IEvent> GetStream(Guid aggregateId)
+        public EventStream GetStream(Guid aggregateId)
         {
             return _state[aggregateId];
         }
 
-        public void AppendToStream(Guid aggregateId, IEnumerable<IEvent> events)
+        public void Append(Guid aggregateId, EventStream eventStream)
         {
             if (_state.ContainsKey(aggregateId))
-                _state[aggregateId].AddRange(events);
+            {               
+                var exisingEventStream = _state[aggregateId];
+                var updatedEvents = exisingEventStream.ToList();
+                updatedEvents.AddRange(eventStream);
+                var updated = _state.TryUpdate(aggregateId, new EventStream(updatedEvents), exisingEventStream);
+            }
             else
-                _state.TryAdd(aggregateId, events.ToList());
+            {
+                var added = _state.TryAdd(aggregateId, eventStream);
+            }
         }       
     }
 }
