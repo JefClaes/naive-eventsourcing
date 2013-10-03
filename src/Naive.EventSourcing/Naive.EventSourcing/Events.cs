@@ -26,6 +26,11 @@ namespace Naive.EventSourcing
             return otherTyped.Amount == Amount;
         }
 
+        public override int GetHashCode()
+        {
+            return Amount.GetHashCode() ^ 97;
+        }
+
         public override string ToString()
         {
             return string.Format("Amount withdrawn: {0}", Amount);
