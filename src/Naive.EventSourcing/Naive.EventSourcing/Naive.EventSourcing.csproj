@@ -43,6 +43,7 @@
     <Compile Include="Account.cs" />
     <Compile Include="EventRecorder.cs" />
     <Compile Include="Events.cs" />
+    <Compile Include="EventStoreException.cs" />
     <Compile Include="EventStream.cs" />
     <Compile Include="InMemoryEventStore.cs" />
     <Compile Include="IEvent.cs" />

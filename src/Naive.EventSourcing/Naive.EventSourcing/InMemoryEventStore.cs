@@ -22,11 +22,14 @@ namespace Naive.EventSourcing
                 var exisingEventStream = _state[aggregateId];
                 var updatedEvents = exisingEventStream.ToList();
                 updatedEvents.AddRange(eventStream);
-                var updated = _state.TryUpdate(aggregateId, new EventStream(updatedEvents), exisingEventStream);
+
+                if (!_state.TryUpdate(aggregateId, new EventStream(updatedEvents), exisingEventStream))
+                    throw new EventStoreException("Couldn't append to existing stream");                
             }
             else
             {
-                var added = _state.TryAdd(aggregateId, eventStream);
+                if (!_state.TryAdd(aggregateId, eventStream))
+                    throw new EventStoreException("Couldn't create new stream");
             }
         }       
     }
