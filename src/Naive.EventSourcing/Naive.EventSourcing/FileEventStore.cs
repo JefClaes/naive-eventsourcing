@@ -37,7 +37,7 @@ namespace Naive.EventSourcing
 
         public void Append(Guid aggregateId, EventStream eventStream)
         {
-            using (var stream = new FileStream(_path, FileMode.Append, FileAccess.Write))
+            using (var stream = new FileStream(_path, FileMode.Append, FileAccess.Write, FileShare.None))
             {
                 using (var streamWriter = new StreamWriter(stream))
                 {
