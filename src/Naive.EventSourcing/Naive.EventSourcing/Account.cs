@@ -40,7 +40,7 @@ namespace Naive.EventSourcing
         {
             if (amount > AmountPolicy.Maximum)
             {
-                _eventRecorder.Record(new WithdrawalAmountExceeded(amount));
+                Apply(new WithdrawalAmountExceeded(amount));
 
                 return;
             }
@@ -63,6 +63,8 @@ namespace Naive.EventSourcing
         {
             _amount += @event.Amount;
         }
+
+        private void When(WithdrawalAmountExceeded @event) { }
     }
 
     public class AmountPolicy
