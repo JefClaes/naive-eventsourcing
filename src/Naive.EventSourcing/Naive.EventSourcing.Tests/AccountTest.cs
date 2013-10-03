@@ -40,7 +40,7 @@ namespace Naive.EventSourcing.Tests
         private Guid _accountId;
 
         [TestInitialize]
-        public void Initialize() 
+        public void Setup() 
         {
             _accountId = Guid.NewGuid();
 
