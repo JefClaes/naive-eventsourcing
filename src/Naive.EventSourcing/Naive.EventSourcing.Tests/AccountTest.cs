@@ -23,13 +23,13 @@ namespace Naive.EventSourcing.Tests
 
         public void WhenIWithdrawTwenty()
         {
-            _account.Withdraw(50);
+            _account.Withdraw(20);
         }
 
         [TestMethod]
         public void ThenTwentyShouldBeWithdrawn()
         {
-            Assert.IsTrue(_account.RecordedEvents().Contains(new AmountWithdrawn(50)));
+            Assert.IsTrue(_account.RecordedEvents().Contains(new AmountWithdrawn(20)));
         }      
     }
 
