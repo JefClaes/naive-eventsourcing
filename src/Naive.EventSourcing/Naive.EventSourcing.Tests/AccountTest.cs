@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Diagnostics;
 
 namespace Naive.EventSourcing.Tests
 {   
@@ -28,7 +29,7 @@ namespace Naive.EventSourcing.Tests
 
         [TestMethod]
         public void ThenTwentyShouldBeWithdrawn()
-        {
+        {        
             Assert.IsTrue(_account.RecordedEvents().Contains(new AmountWithdrawn(20)));
         }      
     }

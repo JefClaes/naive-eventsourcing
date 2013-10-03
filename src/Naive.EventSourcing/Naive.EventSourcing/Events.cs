@@ -46,6 +46,23 @@ namespace Naive.EventSourcing
 
         public int Amount { get; private set; }
 
+        public override bool Equals(object other)
+        {
+            if (other == null)
+                return false;
+            if (other.GetType() != GetType())
+                return false;
+
+            var otherTyped = other as AmountWithdrawn;
+
+            return otherTyped.Amount == Amount;
+        }
+
+        public override int GetHashCode()
+        {
+            return Amount.GetHashCode() ^ 97;
+        }
+
         public override string ToString()
         {
             return string.Format("Amount deposited: {0}", Amount);
@@ -60,6 +77,23 @@ namespace Naive.EventSourcing
         }
 
         public int Amount { get; private set; }
+
+        public override bool Equals(object other)
+        {
+            if (other == null)
+                return false;
+            if (other.GetType() != GetType())
+                return false;
+
+            var otherTyped = other as AmountWithdrawn;
+
+            return otherTyped.Amount == Amount;
+        }
+
+        public override int GetHashCode()
+        {
+            return Amount.GetHashCode() ^ 97;
+        }
 
         public override string ToString()
         {
