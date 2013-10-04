@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using Naive.EventSourcing.EventStore;
+using Naive.EventSourcing.Projections;
 
 namespace Naive.EventSourcing.PlayGround
 {
@@ -34,6 +36,8 @@ namespace Naive.EventSourcing.PlayGround
             sw.Restart();
 
             var stream = eventStore.GetStream(accountId);
+
+            new ProjectionHost().Run(stream);
 
             sw.Stop();
 
