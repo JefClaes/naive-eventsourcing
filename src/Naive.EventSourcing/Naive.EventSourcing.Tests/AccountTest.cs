@@ -30,7 +30,7 @@ namespace Naive.EventSourcing.Tests
         [TestMethod]
         public void ThenTwentyShouldBeWithdrawn()
         {        
-            Assert.IsTrue(_account.RecordedEvents().Contains(new AmountWithdrawn(20)));
+            _account.Raised(new AmountWithdrawn(20));
         }      
     }
 
@@ -62,7 +62,7 @@ namespace Naive.EventSourcing.Tests
         [TestMethod]
         public void ThenNothingHappened()
         {
-            Assert.AreEqual(0, _account.RecordedEvents().Count());
+            _account.RaisedNothing();
         }      
     }
 }

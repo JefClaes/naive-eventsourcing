@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Naive.EventSourcing
 {
-    public class Account
+    public class Account : IEventSourcedAggregate
     {
         private Guid _id;
         private int _amount = 0;

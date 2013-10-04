@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,6 +49,7 @@
     <Compile Include="Events.cs" />
     <Compile Include="EventStoreException.cs" />
     <Compile Include="EventStream.cs" />
+    <Compile Include="IEventSourcedAggregate.cs" />
     <Compile Include="InMemoryEventStore.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="IEventStore.cs" />
