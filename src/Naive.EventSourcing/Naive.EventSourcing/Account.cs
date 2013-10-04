@@ -7,8 +7,7 @@ namespace Naive.EventSourcing
 {
     public class Account : IEventSourcedAggregate
     {
-        private Guid _id;
-        private int _amount = 0;
+        private Guid _id;        
 
         private readonly EventRecorder _eventRecorder;
 
@@ -25,6 +24,8 @@ namespace Naive.EventSourcing
         }
 
         public Guid Id { get { return _id; } }
+
+        public int Amount { get; private set; }
 
         public EventStream RecordedEvents()
         {
@@ -56,12 +57,12 @@ namespace Naive.EventSourcing
 
         private void When(AmountWithdrawn @event)
         {
-            _amount -= @event.Amount;
+            Amount -= @event.Amount;
         }
 
         private void When(AmountDeposited @event)
         {
-            _amount += @event.Amount;
+            Amount += @event.Amount;
         }
 
         private void When(WithdrawalAmountExceeded @event) { }

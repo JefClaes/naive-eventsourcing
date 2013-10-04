@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Naive.EventSourcing.Tests
 {   
@@ -133,5 +134,43 @@ namespace Naive.EventSourcing.Tests
         {
             _account.RaisedNothing();
         }      
+    }
+
+    [TestClass]
+    public class WhenInitializingWithEventsStateIsRestored
+    {
+        private Account _account;
+        private Guid _accountId;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            _accountId = Guid.NewGuid();
+
+            GivenANewAccount();
+            GivenAccountInitializedWithEvents();
+        }
+
+        public void GivenANewAccount()
+        {
+            _account = new Account(_accountId);
+        }
+
+        public void GivenAccountInitializedWithEvents()
+        {
+            _account.Initialize(
+                new EventStream(
+                    new List<IEvent>() {
+                        new AmountDeposited(10),
+                        new AmountWithdrawn(20),
+                        new AmountDeposited(100)
+            }));
+        }        
+
+        [TestMethod]
+        public void TheAmountisCorrect()
+        {
+            Assert.AreEqual(90, _account.Amount);
+        }
     }
 }
