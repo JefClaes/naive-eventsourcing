@@ -53,7 +53,7 @@ namespace Naive.EventSourcing
             if (other.GetType() != GetType())
                 return false;
 
-            var otherTyped = other as AmountWithdrawn;
+            var otherTyped = other as AmountDeposited;
 
             return otherTyped.Amount == Amount;
         }
@@ -85,7 +85,7 @@ namespace Naive.EventSourcing
             if (other.GetType() != GetType())
                 return false;
 
-            var otherTyped = other as AmountWithdrawn;
+            var otherTyped = other as WithdrawalAmountExceeded;
 
             return otherTyped.Amount == Amount;
         }

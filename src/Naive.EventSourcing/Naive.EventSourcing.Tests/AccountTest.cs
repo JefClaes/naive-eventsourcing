@@ -35,6 +35,35 @@ namespace Naive.EventSourcing.Tests
     }
 
     [TestClass]
+    public class WhenDepositingTheAmountIsDeposited
+    {
+        private Account _account;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            GivenANewAccount();
+            WhenIDepositTwenty();
+        }
+
+        public void GivenANewAccount()
+        {
+            _account = new Account(Guid.NewGuid());
+        }
+
+        public void WhenIDepositTwenty()
+        {
+            _account.Deposit(20);
+        }
+
+        [TestMethod]
+        public void ThenTwentyShouldBeDeposited()
+        {
+            _account.Raised(new AmountDeposited(20));
+        }
+    }
+
+    [TestClass]
     public class WhenInitializingEverythingIsInitialized
     {
         private Account _account;

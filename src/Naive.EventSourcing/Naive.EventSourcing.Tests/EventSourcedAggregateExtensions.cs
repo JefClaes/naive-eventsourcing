@@ -12,7 +12,7 @@ namespace Naive.EventSourcing.Tests
 
         public static void RaisedNothing(this IEventSourcedAggregate ar)
         {
-            Assert.IsTrue(!ar.RecordedEvents().Any(), string.Format("Aggregate raised {0} events, expected zero.", ar.RecordedEvents().Count());
+            Assert.IsTrue(!ar.RecordedEvents().Any(), string.Format("Aggregate raised {0} events, expected zero.", ar.RecordedEvents().Count()));
         }
     }
 }
