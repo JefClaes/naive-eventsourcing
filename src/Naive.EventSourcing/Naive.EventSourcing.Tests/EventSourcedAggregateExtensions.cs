@@ -10,6 +10,11 @@ namespace Naive.EventSourcing.Tests
             Assert.IsTrue(ar.RecordedEvents().Contains(@event), string.Format("Aggregate didn't raise {0}.", @event));
         }
 
+        public static void DidNotRaise(this IEventSourcedAggregate ar, IEvent @event)
+        {
+            Assert.IsFalse(ar.RecordedEvents().Contains(@event), string.Format("Aggregate did raise {0}.", @event));
+        }
+
         public static void RaisedNothing(this IEventSourcedAggregate ar)
         {
             Assert.IsTrue(!ar.RecordedEvents().Any(), string.Format("Aggregate raised {0} events, expected zero.", ar.RecordedEvents().Count()));

@@ -64,6 +64,46 @@ namespace Naive.EventSourcing.Tests
     }
 
     [TestClass]
+    public class WhenExceedingTheAmountPolicy
+    {
+        private Account _account;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            GivenANewAccount();
+            WhenIWithdrawTooMuch();
+        }
+
+        public void GivenANewAccount()
+        {
+            _account = new Account(Guid.NewGuid());
+        }
+
+        public void WhenIWithdrawTooMuch()
+        {
+            _account.Withdraw(GivenExceedingAmount());
+        }
+
+        private int GivenExceedingAmount()
+        {
+            return AmountPolicy.Maximum + 1;
+        }
+
+        [TestMethod]
+        public void ThenTheWithdrawalAmountShouldBeExceeded()
+        {
+            _account.Raised(new WithdrawalAmountExceeded(GivenExceedingAmount()));
+        }
+
+        [TestMethod]
+        public void ThenNoMoneyShouldBeWithdrawn()
+        {
+            _account.DidNotRaise(new AmountWithdrawn(GivenExceedingAmount()));
+        }
+    }
+
+    [TestClass]
     public class WhenInitializingEverythingIsInitialized
     {
         private Account _account;
