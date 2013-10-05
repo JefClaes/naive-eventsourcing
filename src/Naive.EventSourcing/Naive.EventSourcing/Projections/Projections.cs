@@ -12,16 +12,19 @@ namespace Naive.EventSourcing.Projections
     {
         public void Handle(WithdrawalAmountExceeded @event)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Withdrawal amount exceeded: " + @event.Amount);
         }
 
         public void Handle(AmountDeposited @event)
         {
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Amount deposited: " + @event.Amount);        
         }
 
         public void Handle(AmountWithdrawn @event)
         {
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Amount withdrawn: " + @event.Amount);
         }
     }    
