@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="EventStore\EventStoreFilePath.cs" />
     <Compile Include="EventStore\FileEventStore.cs" />
     <Compile Include="EventRecorder.cs" />
     <Compile Include="Events.cs" />

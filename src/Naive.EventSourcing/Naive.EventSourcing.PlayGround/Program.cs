@@ -16,17 +16,17 @@ namespace Naive.EventSourcing.PlayGround
 
             sw.Start();
 
-            var accountId = Guid.Parse("a7deef0f-c5a6-49c9-b2d3-9da84c3c1694");
+            var accountId = Guid.Parse("44b9da68-8415-4adc-b99f-2631f1115f9e");
 
             var account = new Account(accountId);
 
-            for (var i = 0; i < 5000; i++) 
+            for (var i = 0; i < 500; i++) 
             {
                 account.Withdraw(i);
                 account.Deposit(i * 2);
             }
 
-            var eventStore = new FileEventStore(@"C:\EventStore.txt");
+            var eventStore = new FileEventStore();
             eventStore.Append(accountId, account.RecordedEvents());
 
             sw.Stop();
