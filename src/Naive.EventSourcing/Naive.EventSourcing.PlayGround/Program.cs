@@ -22,8 +22,8 @@ namespace Naive.EventSourcing.PlayGround
 
             for (var i = 0; i < 500; i++) 
             {
-                account.Withdraw(i);
-                account.Deposit(i * 2);
+                account.Withdraw(i * 1000);
+                account.Deposit(i * 1000 * 2);
             }
 
             var eventStore = new FileEventStore();
