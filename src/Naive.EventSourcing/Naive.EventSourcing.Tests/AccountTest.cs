@@ -5,7 +5,8 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Naive.EventSourcing.Tests
-{   
+{ 
+
     [TestClass]  
     public class WhenWithdrawingTheAmountIsWithdrawn 
     {

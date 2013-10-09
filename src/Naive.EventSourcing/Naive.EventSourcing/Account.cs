@@ -23,7 +23,7 @@ namespace Naive.EventSourcing
         public void Initialize(EventStream eventStream)
         {
             foreach (var @event in eventStream)
-                Play((dynamic)@event);
+                When((dynamic)@event);
         }
 
         public EventStream RecordedEvents()
@@ -50,21 +50,21 @@ namespace Naive.EventSourcing
 
         private void Apply(IEvent @event)
         {
-            Play((dynamic)@event);
+            When((dynamic)@event);
             _eventRecorder.Record(@event);
         }
 
-        private void Play(AmountWithdrawn @event)
+        private void When(AmountWithdrawn @event)
         {
             Amount -= @event.Amount;
         }
 
-        private void Play(AmountDeposited @event)
+        private void When(AmountDeposited @event)
         {
             Amount += @event.Amount;
         }
 
-        private void Play(WithdrawalAmountExceeded @event) { }
+        private void When(WithdrawalAmountExceeded @event) { }
     }
 
     public class AmountPolicy

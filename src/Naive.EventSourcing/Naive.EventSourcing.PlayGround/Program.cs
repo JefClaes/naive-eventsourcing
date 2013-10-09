@@ -19,7 +19,7 @@ namespace Naive.EventSourcing.PlayGround
             acc.Withdraw(10000);
 
             foreach (var @event in acc.RecordedEvents())
-                Console.WriteLine(@event);
+                Console.WriteLine(@event);            
 
             Console.ReadLine();
 
