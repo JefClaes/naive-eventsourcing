@@ -7,8 +7,7 @@ namespace Naive.EventSourcing
 {
     public class Account : IEventSourcedAggregate
     {
-        private Guid _id;        
-
+        private readonly Guid _id;        
         private readonly EventRecorder _eventRecorder;
 
         public Account(Guid id)
