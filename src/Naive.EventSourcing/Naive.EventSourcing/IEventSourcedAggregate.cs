@@ -5,12 +5,15 @@ using System.Text;
 
 namespace Naive.EventSourcing
 {
-    public interface IEventSourcedAggregate
+    public interface IEventSourcedAggregate : IAggregate
     {
-        Guid Id { get; }
-
         void Initialize(EventStream eventStream);
 
         EventStream RecordedEvents();
+    }
+
+    public interface IAggregate
+    {
+        Guid Id { get; }
     }
 }

@@ -12,9 +12,20 @@ namespace Naive.EventSourcing.PlayGround
     {
         static void Main(string[] args)
         {
+            var acc = new Account(Guid.NewGuid());
+
+            acc.Deposit(3100);
+            acc.Withdraw(100);
+            acc.Withdraw(10000);
+
+            foreach (var @event in acc.RecordedEvents())
+                Console.WriteLine(@event);
+
+            Console.ReadLine();
+
             var sw = new Stopwatch();
 
-            sw.Start();
+            sw.Start();            
 
             var accountId = Guid.Parse("44b9da68-8415-4adc-b99f-2631f1115f9e");
 

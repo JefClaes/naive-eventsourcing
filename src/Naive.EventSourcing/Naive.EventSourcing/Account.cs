@@ -14,17 +14,17 @@ namespace Naive.EventSourcing
         {
             _id = id;
             _eventRecorder = new EventRecorder();
-        }
+        }      
+
+        public Guid Id { get { return _id; } }
+
+        public int Amount { get; private set; }
 
         public void Initialize(EventStream eventStream)
         {
             foreach (var @event in eventStream)
                 When((dynamic)@event);
         }
-
-        public Guid Id { get { return _id; } }
-
-        public int Amount { get; private set; }
 
         public EventStream RecordedEvents()
         {
