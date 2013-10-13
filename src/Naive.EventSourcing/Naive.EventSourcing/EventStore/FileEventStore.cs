@@ -6,9 +6,7 @@ namespace Naive.EventSourcing.EventStore
 {
     public class FileEventStore : IEventStore
     {    
-        private const string Dir = @"C:\EventStore";
-
-        public FileEventStore() { }
+        private const string Dir = @"C:\EventStore";        
 
         public EventStream GetStream(Guid aggregateId)
         {
@@ -23,7 +21,6 @@ namespace Naive.EventSourcing.EventStore
 
             var events = lines
                 .Select(x => Record.Deserialize(x))
-                .Where(x => x.AggregateId == aggregateId)
                 .Select(x => x.Event)
                 .ToList();
 
