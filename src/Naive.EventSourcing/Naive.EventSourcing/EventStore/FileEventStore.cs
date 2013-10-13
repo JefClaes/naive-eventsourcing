@@ -9,9 +9,7 @@ namespace Naive.EventSourcing.EventStore
         private const string Dir = @"C:\EventStore";        
 
         public EventStream GetStream(Guid aggregateId)
-        {
-            EnsureDirectoryExists();
-
+        {           
             var path = EventStoreFilePath.From(Dir, aggregateId).Value;
 
             if (!File.Exists(path))
