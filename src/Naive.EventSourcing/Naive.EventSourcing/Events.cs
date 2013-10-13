@@ -7,12 +7,12 @@ namespace Naive.EventSourcing
 {
     public class AmountWithdrawn : IEvent
     {
-        public AmountWithdrawn(int amount)
+        public AmountWithdrawn(Amount amount)
         {
             Amount = amount;
         }
 
-        public int Amount { get; private set; }
+        public Amount Amount { get; private set; }
 
         public override bool Equals(object other)
         {
@@ -23,7 +23,7 @@ namespace Naive.EventSourcing
 
             var otherTyped = other as AmountWithdrawn;
 
-            return otherTyped.Amount == Amount;
+            return otherTyped.Amount.Equals(Amount);
         }
 
         public override int GetHashCode()
@@ -39,12 +39,12 @@ namespace Naive.EventSourcing
 
     public class AmountDeposited : IEvent
     {
-        public AmountDeposited(int amount)
+        public AmountDeposited(Amount amount)
         {
             Amount = amount;
         }
 
-        public int Amount { get; private set; }
+        public Amount Amount { get; private set; }
 
         public override bool Equals(object other)
         {
@@ -55,7 +55,7 @@ namespace Naive.EventSourcing
 
             var otherTyped = other as AmountDeposited;
 
-            return otherTyped.Amount == Amount;
+            return otherTyped.Amount.Equals(Amount);
         }
 
         public override int GetHashCode()
@@ -71,12 +71,12 @@ namespace Naive.EventSourcing
 
     public class WithdrawalAmountExceeded : IEvent
     {
-        public WithdrawalAmountExceeded(int amount)
+        public WithdrawalAmountExceeded(Amount amount)
         {
             Amount = amount;
         }
 
-        public int Amount { get; private set; }
+        public Amount Amount { get; private set; }
 
         public override bool Equals(object other)
         {
@@ -87,7 +87,7 @@ namespace Naive.EventSourcing
 
             var otherTyped = other as WithdrawalAmountExceeded;
 
-            return otherTyped.Amount == Amount;
+            return otherTyped.Amount.Equals(Amount);
         }
 
         public override int GetHashCode()

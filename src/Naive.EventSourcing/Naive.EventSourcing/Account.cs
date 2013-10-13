@@ -7,18 +7,20 @@ namespace Naive.EventSourcing
 {
     public class Account : IEventSourcedAggregate
     {
-        private readonly Guid _id;        
+        private readonly Guid _id;
+        private Amount _amount;
         private readonly EventRecorder _eventRecorder;
 
         public Account(Guid id)
         {
             _id = id;
             _eventRecorder = new EventRecorder();
+            _amount = new Amount();
         }      
 
         public Guid Id { get { return _id; } }
 
-        public int Amount { get; private set; }
+        public Amount Amount { get { return _amount; } }
 
         public void Initialize(EventStream eventStream)
         {
@@ -31,14 +33,14 @@ namespace Naive.EventSourcing
             return _eventRecorder.RecordedEvents();
         }
 
-        public void Deposit(int amount)
+        public void Deposit(Amount amount)
         {
             Apply(new AmountDeposited(amount));
         }
 
-        public void Withdraw(int amount)
+        public void Withdraw(Amount amount)
         {
-            if (amount > AmountPolicy.Maximum)
+            if (amount.IsOver(AmountPolicy.Maximum))
             {
                 Apply(new WithdrawalAmountExceeded(amount));
 
@@ -56,12 +58,12 @@ namespace Naive.EventSourcing
 
         private void When(AmountWithdrawn @event)
         {
-            Amount -= @event.Amount;
+            _amount = _amount.Substract(@event.Amount);
         }
 
         private void When(AmountDeposited @event)
         {
-            Amount += @event.Amount;
+            _amount = _amount.Add(@event.Amount);
         }
 
         private void When(WithdrawalAmountExceeded @event) { }
@@ -69,6 +71,6 @@ namespace Naive.EventSourcing
 
     public class AmountPolicy
     {
-        public static int Maximum { get { return 5000; } }
+        public static Amount Maximum { get { return new Amount(5000); } }
     }
 }

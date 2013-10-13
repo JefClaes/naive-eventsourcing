@@ -26,13 +26,13 @@ namespace Naive.EventSourcing.Tests
 
         public void WhenIWithdrawTwenty()
         {
-            _account.Withdraw(20);
+            _account.Withdraw(new Amount(20));
         }
 
         [TestMethod]
         public void ThenTwentyShouldBeWithdrawn()
         {        
-            _account.Raised(new AmountWithdrawn(20));
+            _account.Raised(new AmountWithdrawn(new Amount(20)));
         }      
     }
 
@@ -55,13 +55,13 @@ namespace Naive.EventSourcing.Tests
 
         public void WhenIDepositTwenty()
         {
-            _account.Deposit(20);
+            _account.Deposit(new Amount(20));
         }
 
         [TestMethod]
         public void ThenTwentyShouldBeDeposited()
         {
-            _account.Raised(new AmountDeposited(20));
+            _account.Raised(new AmountDeposited(new Amount(20)));
         }
     }
 
@@ -87,9 +87,9 @@ namespace Naive.EventSourcing.Tests
             _account.Withdraw(GivenExceedingAmount());
         }
 
-        private int GivenExceedingAmount()
+        private Amount GivenExceedingAmount()
         {
-            return AmountPolicy.Maximum + 1;
+            return new Amount(AmountPolicy.Maximum.Value + 1);
         }
 
         [TestMethod]
@@ -162,16 +162,16 @@ namespace Naive.EventSourcing.Tests
             _account.Initialize(
                 new EventStream(
                     new List<IEvent>() {
-                        new AmountDeposited(10),
-                        new AmountWithdrawn(20),
-                        new AmountDeposited(100)
+                        new AmountDeposited(new Amount(10)),
+                        new AmountWithdrawn(new Amount(20)),
+                        new AmountDeposited(new Amount(100))
             }));
         }        
 
         [TestMethod]
         public void TheAmountisCorrect()
         {
-            Assert.AreEqual(90, _account.Amount);
+            Assert.AreEqual(new Amount(90), _account.Amount);
         }
     }
 }

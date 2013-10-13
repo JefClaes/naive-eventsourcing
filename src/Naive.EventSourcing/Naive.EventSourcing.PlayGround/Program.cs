@@ -14,9 +14,9 @@ namespace Naive.EventSourcing.PlayGround
         {
             var acc = new Account(Guid.NewGuid());
 
-            acc.Deposit(3100);
-            acc.Withdraw(100);
-            acc.Withdraw(10000);
+            acc.Deposit(new Amount(3100));
+            acc.Withdraw(new Amount(100));
+            acc.Withdraw(new Amount(10000));
 
             foreach (var @event in acc.RecordedEvents())
                 Console.WriteLine(@event);            
@@ -33,8 +33,8 @@ namespace Naive.EventSourcing.PlayGround
 
             for (var i = 0; i < 500; i++) 
             {
-                account.Withdraw(i * 1000);
-                account.Deposit(i * 1000 * 2);
+                account.Withdraw(new Amount(i * 1000));
+                account.Deposit(new Amount(i * 1000 * 2));
             }
 
             var eventStore = new FileEventStore();
