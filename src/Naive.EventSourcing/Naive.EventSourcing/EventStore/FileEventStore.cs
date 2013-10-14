@@ -28,7 +28,7 @@ namespace Naive.EventSourcing.EventStore
             return null;
         }
 
-        public void Append(Guid aggregateId, EventStream eventStream)
+        public void CreateOrAppend(Guid aggregateId, EventStream eventStream)
         {
             EnsureDirectoryExists();
 
@@ -38,6 +38,7 @@ namespace Naive.EventSourcing.EventStore
             {
                 using (var streamWriter = new StreamWriter(stream))
                 {
+                    streamWriter.AutoFlush = false;
                     foreach (var @event in eventStream)
                         streamWriter.WriteLine(new Record(aggregateId, @event).Serialized());
                 }

@@ -34,7 +34,7 @@ namespace Naive.EventSourcing.Tests
 
         public void GivenSomeEventsAppended()
         {
-            _eventStore.Append(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
+            _eventStore.CreateOrAppend(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
         }
 
         public void WhenGettingTheEventStream()
@@ -80,12 +80,12 @@ namespace Naive.EventSourcing.Tests
 
         public void GivenSomeEventsAppended()
         {
-            _eventStore.Append(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
+            _eventStore.CreateOrAppend(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
         }
 
         public void GivenSomeMoreEventsAppended()
         {
-            _eventStore.Append(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
+            _eventStore.CreateOrAppend(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
         }
 
         public void WhenGettingTheEventStream()

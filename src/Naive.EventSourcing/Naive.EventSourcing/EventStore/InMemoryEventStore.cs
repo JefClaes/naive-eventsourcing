@@ -15,7 +15,7 @@ namespace Naive.EventSourcing.EventStore
             return _state[aggregateId];
         }
 
-        public void Append(Guid aggregateId, EventStream eventStream)
+        public void CreateOrAppend(Guid aggregateId, EventStream eventStream)
         {
             if (_state.ContainsKey(aggregateId))
             {               
