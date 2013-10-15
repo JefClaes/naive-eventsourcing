@@ -15,7 +15,7 @@ namespace Naive.EventSourcing
         {
             _id = id;
             _eventRecorder = new EventRecorder();
-            _amount = new Amount();
+            _amount = new Amount(0);
         }      
 
         public Guid Id { get { return _id; } }

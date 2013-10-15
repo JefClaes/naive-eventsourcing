@@ -16,7 +16,6 @@ namespace Naive.EventSourcing.EventStore
                 return null;
 
             var lines = File.ReadAllLines(path);
-
             var events = lines
                 .Select(x => Record.Deserialize(x))
                 .Select(x => x.Event)

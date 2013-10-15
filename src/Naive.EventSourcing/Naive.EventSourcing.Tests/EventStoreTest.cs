@@ -101,4 +101,5 @@ namespace Naive.EventSourcing.Tests
 
         private class TestEvent : IEvent { }
     }
+
 }
