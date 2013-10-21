@@ -11,7 +11,7 @@ namespace Naive.EventSourcing.Tests
     public class ProjectionTest
     {
         [TestMethod]
-        public void ReadModelIsCreatedAfterProjectingTheEventStream()
+        public void ReadModelIsMaintedWhileProjectingTheEventStream()
         {
             var events = new List<IEvent>() 
             {
