@@ -12,7 +12,7 @@ namespace Naive.EventSourcing.Projections
 
         public ProjectionHost() 
         {
-            _assembly = typeof(IProjectionFor<>).Assembly;
+            _assembly = typeof(IProjectionOf<>).Assembly;
         }
 
         public ProjectionHost(Assembly assembly)
@@ -20,11 +20,11 @@ namespace Naive.EventSourcing.Projections
             _assembly = assembly;
         }
 
-        public void Run(EventStream eventStream)
+        public void RunOver(EventStream eventStream)
         {
             foreach (var @event in eventStream)
             {
-                var projectionType = typeof(IProjectionFor<>).MakeGenericType(@event.GetType());
+                var projectionType = typeof(IProjectionOf<>).MakeGenericType(@event.GetType());
                 var projectionInstances = _assembly
                     .GetTypes().Where(x => projectionType.IsAssignableFrom(x))
                     .Select(x => Activator.CreateInstance(x))

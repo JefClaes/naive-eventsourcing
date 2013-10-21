@@ -6,9 +6,9 @@ using System.Text;
 namespace Naive.EventSourcing.Projections
 {
     public class Projections : 
-        IProjectionFor<WithdrawalAmountExceeded>,
-        IProjectionFor<AmountDeposited>,
-        IProjectionFor<AmountWithdrawn>
+        IProjectionOf<WithdrawalAmountExceeded>,
+        IProjectionOf<AmountDeposited>,
+        IProjectionOf<AmountWithdrawn>
     {
         public void Handle(WithdrawalAmountExceeded @event)
         {

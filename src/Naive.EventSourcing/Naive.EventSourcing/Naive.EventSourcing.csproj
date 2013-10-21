@@ -55,7 +55,7 @@
     <Compile Include="EventStore\InMemoryEventStore.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="EventStore\IEventStore.cs" />
-    <Compile Include="Projections\IProjectionFor.cs" />
+    <Compile Include="Projections\IProjectionOf.cs" />
     <Compile Include="Projections\ProjectionHost.cs" />
     <Compile Include="Projections\Projections.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

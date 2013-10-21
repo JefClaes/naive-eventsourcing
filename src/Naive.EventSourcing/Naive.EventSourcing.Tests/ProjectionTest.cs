@@ -22,7 +22,7 @@ namespace Naive.EventSourcing.Tests
             };
             var stream = new EventStream(events);
 
-            new ProjectionHost(GetType().Assembly).Run(stream);
+            new ProjectionHost(GetType().Assembly).RunOver(stream);
 
             Assert.AreEqual(1, EvilStatisticsReadModel.WithdrawalAmountExceededCount);
             Assert.AreEqual(2, EvilStatisticsReadModel.AmountDepositedCount);
@@ -30,9 +30,9 @@ namespace Naive.EventSourcing.Tests
         }
 
         public class ProjectionsForEvilStaticsReadModel :
-            IProjectionFor<WithdrawalAmountExceeded>,
-            IProjectionFor<AmountDeposited>,
-            IProjectionFor<AmountWithdrawn>
+            IProjectionOf<WithdrawalAmountExceeded>,
+            IProjectionOf<AmountDeposited>,
+            IProjectionOf<AmountWithdrawn>
         {
             public void Handle(WithdrawalAmountExceeded @event)
             {
