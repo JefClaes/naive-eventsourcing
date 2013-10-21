@@ -6,7 +6,26 @@ namespace Naive.EventSourcing.EventStore
 {
     public class FileEventStore : IEventStore
     {    
-        private const string Dir = @"C:\EventStore";        
+        private const string Dir = @"C:\EventStore";
+
+        public void CreateOrAppend(Guid aggregateId, EventStream eventStream)
+        {
+            EnsureDirectoryExists();
+
+            var path = EventStoreFilePath.From(Dir, aggregateId).Value;
+
+            using (var stream = new FileStream(
+                path, FileMode.Append, FileAccess.Write, FileShare.None))
+            {
+                using (var streamWriter = new StreamWriter(stream))
+                {
+                    streamWriter.AutoFlush = false;
+                    foreach (var @event in eventStream)
+                        streamWriter.WriteLine(
+                            new Record(aggregateId, @event).Serialized());
+                }
+            }
+        }
 
         public EventStream GetStream(Guid aggregateId)
         {           
@@ -25,24 +44,7 @@ namespace Naive.EventSourcing.EventStore
                 return new EventStream(events);
 
             return null;
-        }
-
-        public void CreateOrAppend(Guid aggregateId, EventStream eventStream)
-        {
-            EnsureDirectoryExists();
-
-            var path = EventStoreFilePath.From(Dir, aggregateId).Value;
-
-            using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.None))
-            {
-                using (var streamWriter = new StreamWriter(stream))
-                {
-                    streamWriter.AutoFlush = false;
-                    foreach (var @event in eventStream)
-                        streamWriter.WriteLine(new Record(aggregateId, @event).Serialized());
-                }
-            }
-        }
+        }        
 
         private void EnsureDirectoryExists()
         {
