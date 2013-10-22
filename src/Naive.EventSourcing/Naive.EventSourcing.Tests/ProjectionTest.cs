@@ -22,7 +22,7 @@ namespace Naive.EventSourcing.Tests
             };
             var stream = new EventStream(events);
 
-            new ProjectionHost(GetType().Assembly).RunOver(stream);
+            new ProjectionDispatcher(GetType().Assembly).Dispatch(stream);
 
             Assert.AreEqual(1, EvilStatisticsReadModel.WithdrawalAmountExceededCount);
             Assert.AreEqual(2, EvilStatisticsReadModel.AmountDepositedCount);

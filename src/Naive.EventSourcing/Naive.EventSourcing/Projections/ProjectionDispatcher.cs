@@ -6,21 +6,21 @@ using System.Reflection;
 
 namespace Naive.EventSourcing.Projections
 {
-    public class ProjectionHost
+    public class ProjectionDispatcher
     {
         private readonly Assembly _assembly;
 
-        public ProjectionHost()
+        public ProjectionDispatcher()
         {
             _assembly = typeof(IProjection).Assembly;
         }
 
-        public ProjectionHost(Assembly assembly)
+        public ProjectionDispatcher(Assembly assembly)
         {
             _assembly = assembly;
         }
 
-        public void RunOver(EventStream eventStream)
+        public void Dispatch(EventStream eventStream)
         {
             var projectionType = typeof(IProjection);
             var projectionInstances = _assembly
