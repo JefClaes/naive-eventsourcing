@@ -7,6 +7,6 @@ namespace Naive.EventSourcing.Projections
 {
     public interface IProjection
     {
-        void Handle(EventStream @eventStream);                     
-    }
+        void Handle(EventStream eventStream);                     
+    }  
 }

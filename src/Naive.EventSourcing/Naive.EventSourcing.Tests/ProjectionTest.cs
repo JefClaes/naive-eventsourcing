@@ -34,20 +34,20 @@ namespace Naive.EventSourcing.Tests
             public void Handle(EventStream eventStream)
             {
                 foreach (var @event in eventStream)
-                    Handle((dynamic)@event);
+                    When((dynamic)@event);
             }
 
-            public void Handle(WithdrawalAmountExceeded @event)
+            public void When(WithdrawalAmountExceeded @event)
             {
                 EvilStatisticsReadModel.WithdrawalAmountExceededCount++;
             }
 
-            public void Handle(AmountDeposited @event)
+            public void When(AmountDeposited @event)
             {
                 EvilStatisticsReadModel.AmountDepositedCount++;
             }
 
-            public void Handle(AmountWithdrawn @event)
+            public void When(AmountWithdrawn @event)
             {
                 EvilStatisticsReadModel.AmountWithdrawnCount++;
             }           
