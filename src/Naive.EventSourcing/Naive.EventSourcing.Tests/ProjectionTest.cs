@@ -26,7 +26,7 @@ namespace Naive.EventSourcing.Tests
 
             Assert.AreEqual(1, EvilStatisticsReadModel.WithdrawalAmountExceededCount);
             Assert.AreEqual(2, EvilStatisticsReadModel.AmountDepositedCount);
-            Assert.AreEqual(1, EvilStatisticsReadModel.AmountWithdrawnCount);
+            Assert.AreEqual(0, EvilStatisticsReadModel.AmountWithdrawnCount);
         }
 
         public class ProjectionsToEvilStaticsReadModel : IProjection            
@@ -47,10 +47,7 @@ namespace Naive.EventSourcing.Tests
                 EvilStatisticsReadModel.AmountDepositedCount++;
             }
 
-            public void When(AmountWithdrawn @event)
-            {
-                EvilStatisticsReadModel.AmountWithdrawnCount++;
-            }           
+            public void When(object @event) { }           
         }
 
         public class EvilStatisticsReadModel
