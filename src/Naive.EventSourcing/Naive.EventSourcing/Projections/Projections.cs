@@ -5,11 +5,14 @@ using System.Text;
 
 namespace Naive.EventSourcing.Projections
 {
-    public class Projections : 
-        IProjectionOf<WithdrawalAmountExceeded>,
-        IProjectionOf<AmountDeposited>,
-        IProjectionOf<AmountWithdrawn>
+    public class ProjectionToConsole : IProjection        
     {
+        public void Handle(EventStream eventStream)
+        {
+            foreach (var @event in eventStream)            
+                Handle((dynamic)@event);            
+        }
+
         public void Handle(WithdrawalAmountExceeded @event)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -26,6 +29,6 @@ namespace Naive.EventSourcing.Projections
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Amount withdrawn: " + @event.Amount);
-        }
+        }      
     }    
 }

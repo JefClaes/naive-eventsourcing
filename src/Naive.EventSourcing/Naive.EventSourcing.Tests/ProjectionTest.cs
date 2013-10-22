@@ -29,11 +29,14 @@ namespace Naive.EventSourcing.Tests
             Assert.AreEqual(1, EvilStatisticsReadModel.AmountWithdrawnCount);
         }
 
-        public class ProjectionsForEvilStaticsReadModel :
-            IProjectionOf<WithdrawalAmountExceeded>,
-            IProjectionOf<AmountDeposited>,
-            IProjectionOf<AmountWithdrawn>
+        public class ProjectionsToEvilStaticsReadModel : IProjection            
         {
+            public void Handle(EventStream eventStream)
+            {
+                foreach (var @event in eventStream)
+                    Handle((dynamic)@event);
+            }
+
             public void Handle(WithdrawalAmountExceeded @event)
             {
                 EvilStatisticsReadModel.WithdrawalAmountExceededCount++;
