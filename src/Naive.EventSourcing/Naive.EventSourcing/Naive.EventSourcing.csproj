@@ -56,7 +56,6 @@
     <Compile Include="IEvent.cs" />
     <Compile Include="EventStore\IEventStore.cs" />
     <Compile Include="Projections\IProjection.cs" />
-    <Compile Include="Projections\ProjectionDispatcher.cs" />
     <Compile Include="Projections\ProjectionToConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventStore\Record.cs" />

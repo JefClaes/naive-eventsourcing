@@ -48,7 +48,7 @@ namespace Naive.EventSourcing.PlayGround
 
             var stream = eventStore.GetStream(accountId);
 
-            new ProjectionDispatcher().Dispatch(stream);
+            new ProjectionToConsole().Handle(stream);
 
             sw.Stop();
 
