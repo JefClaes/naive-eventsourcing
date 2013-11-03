@@ -7,8 +7,10 @@ namespace Naive.EventSourcing.EventStore
 {
     public interface IEventStore
     {
-        void CreateOrAppend(Guid aggregateId, EventStream eventStream);
+        void Create(Guid aggregateId, EventStream eventStram);
 
-        EventStream GetStream(Guid aggregateId);
+        void Append(Guid aggregateId, EventStream eventStream, int expectedVersion);
+
+        ReadEventStream GetStream(Guid aggregateId);
     }
 }

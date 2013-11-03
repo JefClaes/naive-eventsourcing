@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="Amount.cs" />
+    <Compile Include="EventStore\ConcurrencyException.cs" />
     <Compile Include="EventStore\EventStoreFilePath.cs" />
     <Compile Include="EventStore\FileEventStore.cs" />
     <Compile Include="EventRecorder.cs" />
@@ -52,9 +53,9 @@
     <Compile Include="EventStore\EventStoreException.cs" />
     <Compile Include="EventStream.cs" />
     <Compile Include="IEventSourcedAggregate.cs" />
-    <Compile Include="EventStore\InMemoryEventStore.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="EventStore\IEventStore.cs" />
+    <Compile Include="ReadEventStream.cs" />
     <Compile Include="Projections\IProjection.cs" />
     <Compile Include="Projections\ProjectionToConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

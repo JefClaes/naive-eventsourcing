@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
+using System.Reflection;
 
 namespace Naive.EventSourcing.EventStore
 {
@@ -10,33 +8,37 @@ namespace Naive.EventSourcing.EventStore
     {
         private const string Seperator = "+++";
 
-        public Record(Guid aggregateId, IEvent @event)
+        public Record(Guid aggregateId, IEvent @event, int version)
         {
             if (@event == null)
                 throw new ArgumentNullException("event");
 
             AggregateId = aggregateId;
-            Event = @event;        
+            Event = @event;
+            Version = version;
         }
 
         public Guid AggregateId { get; set; }
 
         public IEvent Event { get; set; }
 
+        public int Version { get; set; }
+
         public string Serialized()
         {
-            return string.Join(Seperator, new object[] { AggregateId, Event.GetType(), JsonConvert.SerializeObject(Event) });            
+            return string.Join(Seperator, new object[] { AggregateId, Version, Event.GetType(), JsonConvert.SerializeObject(Event) });            
         }
 
-        public static Record Deserialize(string value)
+        public static Record Deserialize(string value, Assembly assembly)
         {
-            var values = value.Split(new[] { Seperator }, StringSplitOptions.RemoveEmptyEntries);
-
+            var values = value.Split(new[] { Seperator }, StringSplitOptions.RemoveEmptyEntries);           
+            
             var aggregateId = Guid.Parse(values[0]);
-            var eventType = Type.GetType(values[1]);
-            var @event = (IEvent)JsonConvert.DeserializeObject(values[2], eventType);
+            var version = Convert.ToInt32(values[1]);
+            var eventType = assembly.GetType(values[2], true);
+            var @event = (IEvent)JsonConvert.DeserializeObject(values[3], eventType);
 
-            return new Record(aggregateId, @event);
+            return new Record(aggregateId, @event, version);
         }
     }
 }

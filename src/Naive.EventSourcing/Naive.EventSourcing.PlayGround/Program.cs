@@ -38,7 +38,7 @@ namespace Naive.EventSourcing.PlayGround
             }
 
             var eventStore = new FileEventStore();
-            eventStore.CreateOrAppend(accountId, account.RecordedEvents());
+            eventStore.Create(accountId, account.RecordedEvents());
 
             sw.Stop();
 

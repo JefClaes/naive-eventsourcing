@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="AccountTest.cs" />
     <Compile Include="EventSourcedAggregateExtensions.cs" />
-    <Compile Include="EventStoreTest.cs" />
+    <Compile Include="FileEventStoreTest.cs" />
     <Compile Include="ProjectionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
