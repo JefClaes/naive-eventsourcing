@@ -37,13 +37,13 @@ namespace Naive.EventSourcing.EventStore
             EnsureRootDirectoryExists();                       
             EnsurePathExists(path);
 
-            var version = -1;
+            var currentVersion = -1;
             var lastLine = File.ReadLines(path).LastOrDefault();
             if (!string.IsNullOrEmpty(lastLine))
-                version = Record.Deserialize(lastLine, _assembly).Version;
+                currentVersion = Record.Deserialize(lastLine, _assembly).Version;
 
-            if (version > expectedVersion)
-                throw new ConcurrencyException(string.Format("Version found: {0}, expected: {1}", version, expectedVersion));
+            if (currentVersion != expectedVersion)
+                throw new ConcurrencyException(string.Format("Version found: {0}, expected: {1}", currentVersion, expectedVersion));
 
             using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write))
             {
@@ -51,9 +51,9 @@ namespace Naive.EventSourcing.EventStore
                 {                                     
                     foreach (var @event in eventStream)
                     {
-                        version++;
+                        currentVersion++;
 
-                        streamWriter.WriteLine(new Record(aggregateId, @event, version).Serialized());
+                        streamWriter.WriteLine(new Record(aggregateId, @event, currentVersion).Serialized());
                     }
                 }
             }
