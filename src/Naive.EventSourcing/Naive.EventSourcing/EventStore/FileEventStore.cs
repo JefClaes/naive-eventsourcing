@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -6,9 +7,11 @@ using System.Reflection;
 namespace Naive.EventSourcing.EventStore
 {
     public class FileEventStore : IEventStore
-    {    
+    {
         private const string Dir = @"C:\EventStore";
         private Assembly _assembly;
+
+        private static ConcurrentDictionary<Guid, object> _locks = new ConcurrentDictionary<Guid, object>();
 
         public FileEventStore()
         {
@@ -20,9 +23,9 @@ namespace Naive.EventSourcing.EventStore
             _assembly = assembly;
         }
 
-        public void Create(Guid aggregateId, EventStream eventStream) 
+        public void Create(Guid aggregateId, EventStream eventStream)
         {
-            CreateOrAppend(aggregateId, eventStream, -1);
+            CreateOrAppend(aggregateId, eventStream, expectedVersion: -1);
         }
 
         public void Append(Guid aggregateId, EventStream eventStream, int expectedVersion)
@@ -34,51 +37,56 @@ namespace Naive.EventSourcing.EventStore
         {
             var path = EventStoreFilePath.From(Dir, aggregateId).Value;
 
-            EnsureRootDirectoryExists();                       
+            EnsureRootDirectoryExists();
             EnsurePathExists(path);
 
-            var currentVersion = -1;
-            var lastLine = File.ReadLines(path).LastOrDefault();
-            if (!string.IsNullOrEmpty(lastLine))
-                currentVersion = Record.Deserialize(lastLine, _assembly).Version;
+            var aggregateLock = _locks.GetOrAdd(aggregateId, new object());
 
-            if (currentVersion != expectedVersion)
-                throw new ConcurrencyException(string.Format("Version found: {0}, expected: {1}", currentVersion, expectedVersion));
-
-            using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.None))
+            lock (aggregateLock) 
             {
-                using (var streamWriter = new StreamWriter(stream))
-                {                                     
-                    foreach (var @event in eventStream)
-                    {
-                        currentVersion++;
+                var currentVersion = -1;
+                var lastLine = File.ReadLines(path).LastOrDefault();
+                if (!string.IsNullOrEmpty(lastLine))
+                    currentVersion = Record.Deserialize(lastLine, _assembly).Version;
 
-                        streamWriter.WriteLine(new Record(aggregateId, @event, currentVersion).Serialized());
+                if (currentVersion != expectedVersion)
+                    throw new ConcurrencyException(string.Format("Version found: {0}, expected: {1}", currentVersion, expectedVersion));
+
+                using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.None))
+                {
+                    using (var streamWriter = new StreamWriter(stream))
+                    {
+                        foreach (var @event in eventStream)
+                        {
+                            currentVersion++;
+
+                            streamWriter.WriteLine(new Record(aggregateId, @event, currentVersion).Serialized());
+                        }
                     }
                 }
-            }
+            }           
         }
 
         public ReadEventStream GetStream(Guid aggregateId)
-        {           
+        {
             var path = EventStoreFilePath.From(Dir, aggregateId).Value;
 
             if (!File.Exists(path))
                 return null;
 
-            var lines = File.ReadAllLines(path);          
+            var lines = File.ReadAllLines(path);
 
-            if (lines.Any())  
+            if (lines.Any())
             {
                 var records = lines.Select(x => Record.Deserialize(x, _assembly));
                 var maxVersion = records.Max(x => x.Version);
                 var events = records.Select(x => x.Event).ToList();
 
                 return new ReadEventStream(events, maxVersion);
-            }           
+            }
 
             return null;
-        }        
+        }
 
         private void EnsureRootDirectoryExists()
         {
