@@ -44,10 +44,7 @@ namespace Naive.EventSourcing.EventStore
             
             lock (aggregateLock) 
             {
-                var currentVersion = -1;
-                var lastLine = File.ReadLines(path).LastOrDefault();
-                if (!string.IsNullOrEmpty(lastLine))
-                    currentVersion = Record.Deserialize(lastLine, _assembly).Version;
+                var currentVersion = GetCurrentVersion(path);
 
                 if (currentVersion != expectedVersion)
                     throw new ConcurrencyException(string.Format("Version found: {0}, expected: {1}", currentVersion, expectedVersion));
@@ -65,7 +62,7 @@ namespace Naive.EventSourcing.EventStore
                     }
                 }
             }          
-        }
+        }        
 
         public ReadEventStream GetStream(Guid aggregateId)
         {
@@ -91,6 +88,15 @@ namespace Naive.EventSourcing.EventStore
 
                 return null;
             }
+        }
+
+        private int GetCurrentVersion(string path)
+        {
+            var currentVersion = -1;
+            var lastLine = File.ReadLines(path).LastOrDefault();
+            if (!string.IsNullOrEmpty(lastLine))
+                currentVersion = Record.Deserialize(lastLine, _assembly).Version;
+            return currentVersion;
         }
 
         private void EnsureRootDirectoryExists()
