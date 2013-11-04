@@ -51,6 +51,7 @@
     <Compile Include="EventRecorder.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="EventStore\EventStoreException.cs" />
+    <Compile Include="EventStore\Locks.cs" />
     <Compile Include="EventStream.cs" />
     <Compile Include="IEventSourcedAggregate.cs" />
     <Compile Include="IEvent.cs" />

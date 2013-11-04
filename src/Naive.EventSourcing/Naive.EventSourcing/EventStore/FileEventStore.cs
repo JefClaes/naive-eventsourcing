@@ -11,8 +11,6 @@ namespace Naive.EventSourcing.EventStore
         private const string Dir = @"C:\EventStore";
         private Assembly _assembly;
 
-        private static ConcurrentDictionary<Guid, object> _locks = new ConcurrentDictionary<Guid, object>();
-
         public FileEventStore()
         {
             _assembly = GetType().Assembly;
@@ -40,9 +38,7 @@ namespace Naive.EventSourcing.EventStore
             EnsureRootDirectoryExists();
             EnsurePathExists(path);
 
-            var aggregateLock = _locks.GetOrAdd(aggregateId, new object());            
-            
-            lock (aggregateLock) 
+            lock (Locks.For(aggregateId))
             {
                 var currentVersion = GetCurrentVersion(path);
 
@@ -61,14 +57,12 @@ namespace Naive.EventSourcing.EventStore
                         }
                     }
                 }
-            }          
-        }        
+            }
+        }
 
         public ReadEventStream GetStream(Guid aggregateId)
         {
-            var aggregateLock = _locks.GetOrAdd(aggregateId, new object());
-
-            lock (aggregateLock)
+            lock (Locks.For(aggregateId))
             {
                 var path = EventStoreFilePath.From(Dir, aggregateId).Value;
 

@@ -174,5 +174,5 @@ namespace Naive.EventSourcing.Tests
         }
 
         private class ConcurrencyTestEvent : IEvent { }
-    }  
+    }    
 }
