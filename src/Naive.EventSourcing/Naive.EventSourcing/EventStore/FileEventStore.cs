@@ -69,23 +69,28 @@ namespace Naive.EventSourcing.EventStore
 
         public ReadEventStream GetStream(Guid aggregateId)
         {
-            var path = EventStoreFilePath.From(Dir, aggregateId).Value;
+            var aggregateLock = _locks.GetOrAdd(aggregateId, new object());
 
-            if (!File.Exists(path))
-                return null;
-
-            var lines = File.ReadAllLines(path);
-
-            if (lines.Any())
+            lock (aggregateLock)
             {
-                var records = lines.Select(x => Record.Deserialize(x, _assembly));
-                var maxVersion = records.Max(x => x.Version);
-                var events = records.Select(x => x.Event).ToList();
+                var path = EventStoreFilePath.From(Dir, aggregateId).Value;
 
-                return new ReadEventStream(events, maxVersion);
+                if (!File.Exists(path))
+                    return null;
+
+                var lines = File.ReadAllLines(path);
+
+                if (lines.Any())
+                {
+                    var records = lines.Select(x => Record.Deserialize(x, _assembly));
+                    var maxVersion = records.Max(x => x.Version);
+                    var events = records.Select(x => x.Event).ToList();
+
+                    return new ReadEventStream(events, maxVersion);
+                }
+
+                return null;
             }
-
-            return null;
         }
 
         private void EnsureRootDirectoryExists()
