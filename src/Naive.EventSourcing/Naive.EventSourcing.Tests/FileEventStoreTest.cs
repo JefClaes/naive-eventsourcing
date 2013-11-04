@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Naive.EventSourcing.EventStore;
+using System.Threading.Tasks;
 
 namespace Naive.EventSourcing.Tests
 {

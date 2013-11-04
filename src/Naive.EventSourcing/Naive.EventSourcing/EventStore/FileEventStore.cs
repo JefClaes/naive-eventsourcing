@@ -40,8 +40,8 @@ namespace Naive.EventSourcing.EventStore
             EnsureRootDirectoryExists();
             EnsurePathExists(path);
 
-            var aggregateLock = _locks.GetOrAdd(aggregateId, new object());
-
+            var aggregateLock = _locks.GetOrAdd(aggregateId, new object());            
+            
             lock (aggregateLock) 
             {
                 var currentVersion = -1;
@@ -52,7 +52,7 @@ namespace Naive.EventSourcing.EventStore
                 if (currentVersion != expectedVersion)
                     throw new ConcurrencyException(string.Format("Version found: {0}, expected: {1}", currentVersion, expectedVersion));
 
-                using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.None))
+                using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
                 {
                     using (var streamWriter = new StreamWriter(stream))
                     {
@@ -64,7 +64,7 @@ namespace Naive.EventSourcing.EventStore
                         }
                     }
                 }
-            }           
+            }          
         }
 
         public ReadEventStream GetStream(Guid aggregateId)
