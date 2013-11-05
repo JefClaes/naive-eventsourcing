@@ -38,7 +38,7 @@ namespace Naive.EventSourcing.EventStore
             EnsureRootDirectoryExists();
             EnsurePathExists(path);
 
-            lock (Locks.For(aggregateId))
+            lock (Lock.For(aggregateId))
             {
                 var currentVersion = GetCurrentVersion(path);
 
@@ -62,7 +62,7 @@ namespace Naive.EventSourcing.EventStore
 
         public ReadEventStream GetStream(Guid aggregateId)
         {
-            lock (Locks.For(aggregateId))
+            lock (Lock.For(aggregateId))
             {
                 var path = EventStoreFilePath.From(Dir, aggregateId).Value;
 
@@ -87,9 +87,14 @@ namespace Naive.EventSourcing.EventStore
         private int GetCurrentVersion(string path)
         {
             var currentVersion = -1;
-            var lastLine = File.ReadLines(path).LastOrDefault();
-            if (!string.IsNullOrEmpty(lastLine))
-                currentVersion = Record.Deserialize(lastLine, _assembly).Version;
+
+            var lines = File.ReadLines(path);
+            
+            if (lines.Any())
+                currentVersion = lines
+                    .Select(x => Record.Deserialize(x, _assembly))
+                    .Max(x => x.Version);
+            
             return currentVersion;
         }
 

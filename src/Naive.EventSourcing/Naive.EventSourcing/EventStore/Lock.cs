@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace Naive.EventSourcing.EventStore
 {
-    public class Locks
+    public class Lock
     {
         private static ConcurrentDictionary<Guid, object> _locks = new ConcurrentDictionary<Guid, object>();
 
