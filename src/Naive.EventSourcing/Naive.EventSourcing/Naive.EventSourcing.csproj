@@ -52,6 +52,7 @@
     <Compile Include="Events.cs" />
     <Compile Include="EventStore\EventStoreException.cs" />
     <Compile Include="EventStore\Lock.cs" />
+    <Compile Include="EventStore\OptimisticConcurrencyException.cs" />
     <Compile Include="EventStream.cs" />
     <Compile Include="IEventSourcedAggregate.cs" />
     <Compile Include="IEvent.cs" />

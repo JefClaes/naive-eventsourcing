@@ -43,7 +43,7 @@ namespace Naive.EventSourcing.EventStore
                 var currentVersion = GetCurrentVersion(path);
 
                 if (currentVersion != expectedVersion)
-                    throw new ConcurrencyException(string.Format("Version found: {0}, expected: {1}", currentVersion, expectedVersion));
+                    throw new OptimisticConcurrencyException(expectedVersion, currentVersion);
 
                 using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
                 {
