@@ -74,10 +74,10 @@ namespace Naive.EventSourcing.EventStore
                 if (lines.Any())
                 {
                     var records = lines.Select(x => Record.Deserialize(x, _assembly));
-                    var maxVersion = records.Max(x => x.Version);
+                    var currentVersion = records.Max(x => x.Version);
                     var events = records.Select(x => x.Event).ToList();
 
-                    return new ReadEventStream(events, maxVersion);
+                    return new ReadEventStream(events, currentVersion);
                 }
 
                 return null;

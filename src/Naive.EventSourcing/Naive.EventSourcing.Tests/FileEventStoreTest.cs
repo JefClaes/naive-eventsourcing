@@ -120,7 +120,7 @@ namespace Naive.EventSourcing.Tests
         private IEventStore _eventStore;
         private Guid _aggregateId;
 
-        private ConcurrencyException _expectedConcurrencyException;
+        private OptimisticConcurrencyException _expectedConcurrencyException;
 
         [TestInitialize]
         public void Initialize()
@@ -129,12 +129,12 @@ namespace Naive.EventSourcing.Tests
             {
                 GivenEventStore();
                 GivenAggregateId();
-                GivenSomeEventsAppended();
-                WhenAppendingTwoEventStreamsOutOfOrder();
+                GivenEventStreamCreated();
+                WhenAppendingTwoEventStreamsWithTheSameExpectedVersion();
             }
-            catch (ConcurrencyException cex) 
+            catch (OptimisticConcurrencyException ocex) 
             {
-                _expectedConcurrencyException = cex;
+                _expectedConcurrencyException = ocex;
             }
         }
 
@@ -148,12 +148,12 @@ namespace Naive.EventSourcing.Tests
             _aggregateId = Guid.NewGuid();
         }
 
-        public void GivenSomeEventsAppended()
+        public void GivenEventStreamCreated()
         {
             _eventStore.Create(_aggregateId, new EventStream(new List<ConcurrencyTestEvent>() { new ConcurrencyTestEvent(), new ConcurrencyTestEvent() }));
         }
 
-        public void WhenAppendingTwoEventStreamsOutOfOrder()
+        public void WhenAppendingTwoEventStreamsWithTheSameExpectedVersion()
         {
             var expectedVersion = _eventStore.GetStream(_aggregateId).Version;
 
