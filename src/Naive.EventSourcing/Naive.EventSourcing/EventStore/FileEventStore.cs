@@ -45,6 +45,7 @@ namespace Naive.EventSourcing.EventStore
                 if (currentVersion != expectedVersion)
                     throw new OptimisticConcurrencyException(currentVersion, expectedVersion);
 
+                EnsureJournalFileEmpty(paths);
                 WriteEventStreamToFile(eventStream, aggregateId, paths.JournalFile, currentVersion);
                 WriteEventStreamToFile(eventStream, aggregateId, paths.DatabaseFile, currentVersion);
                 TruncateJournalFile(paths);
@@ -123,6 +124,14 @@ namespace Naive.EventSourcing.EventStore
                 using (var fs = File.Create(paths.DatabaseFile)) { };
             if (!File.Exists(paths.JournalFile))
                 using (var fs = File.Create(paths.JournalFile)) { };
+        }
+
+        private void EnsureJournalFileEmpty(EventStoreFilePaths paths)
+        {
+            var fi = new FileInfo(paths.JournalFile);
+
+            if (fi.Length > 0)
+                throw new CorruptionException("Journal file not empty, restore the eventstore first.");
         }
     }
 }

@@ -46,6 +46,7 @@
     <Compile Include="Account.cs" />
     <Compile Include="Amount.cs" />
     <Compile Include="EventStore\ConcurrencyException.cs" />
+    <Compile Include="EventStore\CorruptionException.cs" />
     <Compile Include="EventStore\EventStoreFilePaths.cs" />
     <Compile Include="EventStore\FileEventStore.cs" />
     <Compile Include="EventRecorder.cs" />
