@@ -108,9 +108,8 @@ namespace Naive.EventSourcing.EventStore
         }
 
         private void WriteCurrentVersionToJournalFile(JournalFilePath path, int currentVersion)
-        {
-            // atomic operation
-            using (var stream = new FileStream(path.Value, FileMode.Append, FileSystemRights.AppendData, FileShare.None, 4096, FileOptions.None))
+        {         
+            using (var stream = new FileStream(path.Value, FileMode.Append, FileSystemRights.AppendData, FileShare.None, 4096, FileOptions.WriteThrough))
             {
                 using (var streamWriter = new StreamWriter(stream))
                 {
