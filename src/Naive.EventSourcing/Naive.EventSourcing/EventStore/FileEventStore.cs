@@ -18,7 +18,7 @@ namespace Naive.EventSourcing.EventStore
         public FileEventStore(Assembly assembly)
         {
             _assembly = assembly;
-        }
+        }        
 
         public void Create(Guid aggregateId, EventStream eventStream)
         {

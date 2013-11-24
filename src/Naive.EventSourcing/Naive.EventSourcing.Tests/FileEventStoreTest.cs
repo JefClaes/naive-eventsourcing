@@ -17,7 +17,7 @@ namespace Naive.EventSourcing.Tests
     }
 
     [TestClass]
-    public class WhenGettingStreamAfterAppendingForTheFirstTime
+    public class WhenGettingStreamAfterAppendingForTheFirstTimeSpecs
     {
         private IEventStore _eventStore;
         private Guid _aggregateId;
@@ -63,7 +63,7 @@ namespace Naive.EventSourcing.Tests
     }
 
     [TestClass]
-    public class WhenGettingStreamAfterAppendingForTheSecondTime
+    public class WhenGettingStreamAfterAppendingForTheSecondTimeSpecs
     {
         private IEventStore _eventStore;
         private Guid _aggregateId;
@@ -116,7 +116,7 @@ namespace Naive.EventSourcing.Tests
     }
 
     [TestClass]
-    public class WhenAppendingToStreamWithConcurrentChanges
+    public class WhenAppendingToStreamWithConcurrentChangesSpecs
     {
         private IEventStore _eventStore;
         private Guid _aggregateId;
@@ -178,7 +178,7 @@ namespace Naive.EventSourcing.Tests
     }  
 
     [TestClass]
-    public class WhenCreatingStream
+    public class WhenCreatingStreamSpecs
     {
         private IEventStore _eventStore;
         private Guid _aggregateId;
@@ -188,7 +188,7 @@ namespace Naive.EventSourcing.Tests
         {
             GivenEventStore();
             GivenAggregateId();
-            GivenEventStreamCreated();
+            WhenCreatingStream();
         }
 
         public void GivenEventStore()
@@ -201,7 +201,7 @@ namespace Naive.EventSourcing.Tests
             _aggregateId = Guid.NewGuid();
         }
 
-        public void GivenEventStreamCreated()
+        public void WhenCreatingStream()
         {
             _eventStore.Create(_aggregateId, new EventStream(new List<ConcurrencyTestEvent>() { new ConcurrencyTestEvent(), new ConcurrencyTestEvent() }));
         }
@@ -226,6 +226,70 @@ namespace Naive.EventSourcing.Tests
         }
 
         private class ConcurrencyTestEvent : IEvent { }
+    }
+
+    [TestClass]
+    public class WhenAppendingWithNonEmptyJournalFileSpecs 
+    {
+        private IEventStore _eventStore;
+        private Guid _aggregateId;
+
+        private CorruptionException _expectedException;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            try
+            {
+                GivenEventStore();
+                GivenAggregateId();
+                GivenEventStreamCreated();
+                GivenNonEmptyJournalFile();
+                WhenAppendingEventStream();
+            }
+            catch (CorruptionException corrEx)
+            {
+                _expectedException = corrEx;
+            }
+        }
+
+        public void GivenEventStore()
+        {
+            _eventStore = FileEventStoreTests.CreateFileEventStore();
+        }
+
+        public void GivenAggregateId()
+        {
+            _aggregateId = Guid.NewGuid();
+        }
+
+        public void GivenEventStreamCreated()
+        {
+            _eventStore.Create(_aggregateId, new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }));
+        }
+
+        public void GivenNonEmptyJournalFile()
+        {
+            using (var writer = File.AppendText(EventStoreFilePaths.From(_aggregateId).JournalFile.Value))
+                writer.WriteLine("NOTEMPTY");            
+        }
+
+        public void WhenAppendingEventStream() 
+        {
+            var stream = _eventStore.GetStream(_aggregateId);
+            _eventStore.Append(
+                _aggregateId, 
+                new EventStream(new List<TestEvent>() { new TestEvent(), new TestEvent() }),
+                stream.Version);
+        }
+
+        [TestMethod]
+        public void ACorruptionExceptionIsThrown()
+        {
+            Assert.IsNotNull(_expectedException);
+        }
+
+        private class TestEvent : IEvent { }
     }
 
     [TestClass]
