@@ -7,8 +7,7 @@ using System.Reflection;
 namespace Naive.EventSourcing.EventStore
 {
     public class FileEventStore : IEventStore
-    {
-        private const string Dir = @"C:\EventStore";
+    {     
         private Assembly _assembly;
 
         public FileEventStore()
@@ -33,13 +32,14 @@ namespace Naive.EventSourcing.EventStore
 
         private void CreateOrAppend(Guid aggregateId, EventStream eventStream, int expectedVersion)
         {
-            var paths = EventStoreFilePaths.From(Dir, aggregateId);
+            var paths = EventStoreFilePaths.From(aggregateId);
 
             EnsureRootDirectoryExists();
-            EnsurePathExists(paths.DatabaseFile);
 
             lock (Lock.For(aggregateId))
             {
+                EnsurePathsExist(paths);
+
                 var currentVersion = GetCurrentVersion(paths.DatabaseFile);
 
                 if (currentVersion != expectedVersion)
@@ -64,7 +64,7 @@ namespace Naive.EventSourcing.EventStore
         {
             lock (Lock.For(aggregateId))
             {
-                var paths = EventStoreFilePaths.From(Dir, aggregateId);
+                var paths = EventStoreFilePaths.From(aggregateId);
 
                 if (!File.Exists(paths.DatabaseFile))
                     return null;
@@ -100,14 +100,16 @@ namespace Naive.EventSourcing.EventStore
 
         private void EnsureRootDirectoryExists()
         {
-            if (!Directory.Exists(Dir))
-                Directory.CreateDirectory(Dir);
+            if (!Directory.Exists(EventStoreFilePaths.Root))
+                Directory.CreateDirectory(EventStoreFilePaths.Root);
         }
 
-        private void EnsurePathExists(string path)
+        private void EnsurePathsExist(EventStoreFilePaths paths)
         {
-            if (!File.Exists(path))
-                using (var fs = File.Create(path)) { };
+            if (!File.Exists(paths.DatabaseFile))
+                using (var fs = File.Create(paths.DatabaseFile)) { };
+            if (!File.Exists(paths.JournalFile))
+                using (var fs = File.Create(paths.JournalFile)) { };
         }
     }
 }

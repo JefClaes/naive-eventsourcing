@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Naive.EventSourcing.EventStore;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Naive.EventSourcing.Tests
 {
@@ -177,12 +178,56 @@ namespace Naive.EventSourcing.Tests
     }  
 
     [TestClass]
+    public class WhenCreatingStream
+    {
+        private IEventStore _eventStore;
+        private Guid _aggregateId;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            GivenEventStore();
+            GivenAggregateId();
+            GivenEventStreamCreated();
+        }
+
+        public void GivenEventStore()
+        {
+            _eventStore = FileEventStoreTests.CreateFileEventStore();
+        }
+
+        public void GivenAggregateId()
+        {
+            _aggregateId = Guid.NewGuid();
+        }
+
+        public void GivenEventStreamCreated()
+        {
+            _eventStore.Create(_aggregateId, new EventStream(new List<ConcurrencyTestEvent>() { new ConcurrencyTestEvent(), new ConcurrencyTestEvent() }));
+        }
+
+        [TestMethod]
+        public void TheDatabaseFileIsCreated()
+        {
+            File.Exists(EventStoreFilePaths.From(_aggregateId).DatabaseFile);
+        }
+
+        [TestMethod]
+        public void TheJournalFileIsCreated()
+        {
+            File.Exists(EventStoreFilePaths.From(_aggregateId).JournalFile);
+        }
+
+        private class ConcurrencyTestEvent : IEvent { }
+    }
+
+    [TestClass]
     public class EventStoreFilePathsSpecs
     {
         [TestMethod]
         public void DatabaseFileNameIsCorrect()
         {
-            var paths = EventStoreFilePaths.From(@"C:\EventStore", Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
+            var paths = EventStoreFilePaths.From(Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
 
             Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.txt", paths.DatabaseFile, ignoreCase : true);
         } 
@@ -190,7 +235,7 @@ namespace Naive.EventSourcing.Tests
         [TestMethod]
         public void JournalFileNameIsCorrect()
         {
-             var paths = EventStoreFilePaths.From(@"C:\EventStore", Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
+             var paths = EventStoreFilePaths.From(Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
 
             Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.journal.txt", paths.JournalFile, ignoreCase : true);
         }

@@ -8,6 +8,8 @@ namespace Naive.EventSourcing.EventStore
 {
     public class EventStoreFilePaths
     {
+        public const string Root = @"C:\EventStore";
+
         private EventStoreFilePaths(string databaseFile, string journalFile)
         {
             if (string.IsNullOrEmpty(databaseFile))
@@ -23,13 +25,10 @@ namespace Naive.EventSourcing.EventStore
 
         public string JournalFile { get; private set; }
 
-        public static EventStoreFilePaths From(string dir, Guid aggregateId)
+        public static EventStoreFilePaths From(Guid aggregateId)
         {
-            if (string.IsNullOrEmpty(dir))
-                throw new ArgumentNullException("dir");
-
-            var databaseFile = Path.Combine(dir, string.Concat(aggregateId, ".txt"));
-            var journalFile = Path.Combine(dir, string.Concat(aggregateId, ".journal.txt"));
+            var databaseFile = Path.Combine(Root, string.Concat(aggregateId, ".txt"));
+            var journalFile = Path.Combine(Root, string.Concat(aggregateId, ".journal.txt"));
 
             return new EventStoreFilePaths(databaseFile, journalFile);
         }
