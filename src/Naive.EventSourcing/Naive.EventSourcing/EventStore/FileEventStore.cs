@@ -33,19 +33,19 @@ namespace Naive.EventSourcing.EventStore
 
         private void CreateOrAppend(Guid aggregateId, EventStream eventStream, int expectedVersion)
         {
-            var path = EventStoreFilePaths.From(Dir, aggregateId).DatabaseFile;
+            var paths = EventStoreFilePaths.From(Dir, aggregateId);
 
             EnsureRootDirectoryExists();
-            EnsurePathExists(path);
+            EnsurePathExists(paths.DatabaseFile);
 
             lock (Lock.For(aggregateId))
             {
-                var currentVersion = GetCurrentVersion(path);
+                var currentVersion = GetCurrentVersion(paths.DatabaseFile);
 
                 if (currentVersion != expectedVersion)
                     throw new OptimisticConcurrencyException(currentVersion, expectedVersion);
 
-                using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
+                using (var stream = new FileStream(paths.DatabaseFile, FileMode.Append, FileAccess.Write, FileShare.Read))
                 {
                     using (var streamWriter = new StreamWriter(stream))
                     {
@@ -64,12 +64,12 @@ namespace Naive.EventSourcing.EventStore
         {
             lock (Lock.For(aggregateId))
             {
-                var path = EventStoreFilePaths.From(Dir, aggregateId).DatabaseFile;
+                var paths = EventStoreFilePaths.From(Dir, aggregateId);
 
-                if (!File.Exists(path))
+                if (!File.Exists(paths.DatabaseFile))
                     return null;
 
-                var lines = File.ReadAllLines(path);
+                var lines = File.ReadAllLines(paths.DatabaseFile);
 
                 if (lines.Any())
                 {
