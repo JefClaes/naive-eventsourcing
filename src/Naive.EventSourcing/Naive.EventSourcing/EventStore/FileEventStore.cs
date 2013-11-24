@@ -33,7 +33,7 @@ namespace Naive.EventSourcing.EventStore
 
         private void CreateOrAppend(Guid aggregateId, EventStream eventStream, int expectedVersion)
         {
-            var path = EventStoreFilePath.From(Dir, aggregateId).Value;
+            var path = EventStoreFilePaths.From(Dir, aggregateId).DatabaseFile;
 
             EnsureRootDirectoryExists();
             EnsurePathExists(path);
@@ -64,7 +64,7 @@ namespace Naive.EventSourcing.EventStore
         {
             lock (Lock.For(aggregateId))
             {
-                var path = EventStoreFilePath.From(Dir, aggregateId).Value;
+                var path = EventStoreFilePaths.From(Dir, aggregateId).DatabaseFile;
 
                 if (!File.Exists(path))
                     return null;

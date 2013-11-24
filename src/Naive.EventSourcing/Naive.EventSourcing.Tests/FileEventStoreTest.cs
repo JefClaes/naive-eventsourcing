@@ -174,5 +174,25 @@ namespace Naive.EventSourcing.Tests
         }
 
         private class ConcurrencyTestEvent : IEvent { }
-    }    
+    }  
+
+    [TestClass]
+    public class EventStoreFilePathsSpecs
+    {
+        [TestMethod]
+        public void DatabaseFileNameIsCorrect()
+        {
+            var paths = EventStoreFilePaths.From(@"C:\EventStore", Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
+
+            Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.txt", paths.DatabaseFile, ignoreCase : true);
+        } 
+
+        [TestMethod]
+        public void JournalFileNameIsCorrect()
+        {
+             var paths = EventStoreFilePaths.From(@"C:\EventStore", Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
+
+            Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.journal.txt", paths.JournalFile, ignoreCase : true);
+        }
+    }
 }
