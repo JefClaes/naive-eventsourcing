@@ -209,19 +209,19 @@ namespace Naive.EventSourcing.Tests
         [TestMethod]
         public void TheDatabaseFileIsCreated()
         {
-            File.Exists(EventStoreFilePaths.From(_aggregateId).DatabaseFile);
+            File.Exists(EventStoreFilePaths.From(_aggregateId).DatabaseFile.Value);
         }
 
         [TestMethod]
         public void TheJournalFileIsCreated()
         {
-            File.Exists(EventStoreFilePaths.From(_aggregateId).JournalFile);
+            File.Exists(EventStoreFilePaths.From(_aggregateId).JournalFile.Value);
         }
 
         [TestMethod]
         public void TheJournalFileIsTruncatedAfterwards()
         {
-            var fi = new FileInfo(EventStoreFilePaths.From(_aggregateId).JournalFile);
+            var fi = new FileInfo(EventStoreFilePaths.From(_aggregateId).JournalFile.Value);
             Assert.AreEqual(0, fi.Length);
         }
 
@@ -236,7 +236,7 @@ namespace Naive.EventSourcing.Tests
         {
             var paths = EventStoreFilePaths.From(Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
 
-            Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.txt", paths.DatabaseFile, ignoreCase : true);
+            Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.txt", paths.DatabaseFile.Value, ignoreCase : true);
         } 
 
         [TestMethod]
@@ -244,7 +244,7 @@ namespace Naive.EventSourcing.Tests
         {
              var paths = EventStoreFilePaths.From(Guid.Parse("B6C4C31B-BD48-4545-83E7-CE5DD4A6C801"));
 
-            Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.journal.txt", paths.JournalFile, ignoreCase : true);
+            Assert.AreEqual(@"C:\EventStore\B6C4C31B-BD48-4545-83E7-CE5DD4A6C801.journal.txt", paths.JournalFile.Value, ignoreCase : true);
         }
     }
 }

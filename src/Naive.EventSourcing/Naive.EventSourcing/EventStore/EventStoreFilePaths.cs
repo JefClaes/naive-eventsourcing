@@ -17,13 +17,13 @@ namespace Naive.EventSourcing.EventStore
             if (string.IsNullOrEmpty(journalFile))
                 throw new ArgumentNullException("journalFile");
 
-            DatabaseFile = databaseFile;
-            JournalFile = journalFile;
+            DatabaseFile = new DatabaseFilePath(databaseFile);
+            JournalFile = new JournalFilePath(journalFile);
         }
 
-        public string DatabaseFile { get; private set; }
+        public DatabaseFilePath DatabaseFile { get; private set; }
 
-        public string JournalFile { get; private set; }
+        public JournalFilePath JournalFile { get; private set; }
 
         public static EventStoreFilePaths From(Guid aggregateId)
         {
@@ -31,6 +31,74 @@ namespace Naive.EventSourcing.EventStore
             var journalFile = Path.Combine(Root, string.Concat(aggregateId, ".journal.txt"));
 
             return new EventStoreFilePaths(databaseFile, journalFile);
+        }
+    }
+
+    public class DatabaseFilePath
+    {
+        private readonly string _value;
+
+        public DatabaseFilePath(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                throw new ArgumentNullException(value);
+
+            _value = value;
+        }
+
+        public string Value
+        {
+            get { return _value; }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            var typedObj = obj as DatabaseFilePath;
+            if (typedObj == null)
+                return false;
+
+            return this.Value == typedObj.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return _value.GetHashCode();
+        }
+    }
+
+    public class JournalFilePath
+    {
+        private readonly string _value;
+
+        public JournalFilePath(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                throw new ArgumentNullException(value);
+
+            _value = value;
+        }
+
+        public string Value
+        {
+            get { return _value; }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            var typedObj = obj as JournalFilePath;
+            if (typedObj == null)
+                return false;
+
+            return this.Value == typedObj.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return _value.GetHashCode();
         }
     }
 }

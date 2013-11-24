@@ -45,10 +45,10 @@ namespace Naive.EventSourcing.EventStore
                 if (currentVersion != expectedVersion)
                     throw new OptimisticConcurrencyException(currentVersion, expectedVersion);
 
-                EnsureJournalFileEmpty(paths);
-                WriteEventStreamToFile(eventStream, aggregateId, paths.JournalFile, currentVersion);
-                WriteEventStreamToFile(eventStream, aggregateId, paths.DatabaseFile, currentVersion);
-                TruncateJournalFile(paths);
+                EnsureFileEmpty(paths.JournalFile);
+                WriteEventStreamToFile(eventStream, aggregateId, paths.JournalFile.Value, currentVersion);
+                WriteEventStreamToFile(eventStream, aggregateId, paths.DatabaseFile.Value, currentVersion);
+                TruncateFile(paths.JournalFile);
             }
         }
 
@@ -58,10 +58,10 @@ namespace Naive.EventSourcing.EventStore
             {
                 var paths = EventStoreFilePaths.From(aggregateId);
 
-                if (!File.Exists(paths.DatabaseFile))
+                if (!File.Exists(paths.DatabaseFile.Value))
                     return null;
 
-                var lines = File.ReadAllLines(paths.DatabaseFile);
+                var lines = File.ReadAllLines(paths.DatabaseFile.Value);
 
                 if (lines.Any())
                 {
@@ -76,11 +76,11 @@ namespace Naive.EventSourcing.EventStore
             }
         }
 
-        private int GetCurrentVersion(string path)
+        private int GetCurrentVersion(DatabaseFilePath path)
         {
             var currentVersion = -1;
 
-            var lines = File.ReadLines(path);
+            var lines = File.ReadLines(path.Value);
             
             if (lines.Any())
                 currentVersion = lines
@@ -113,22 +113,22 @@ namespace Naive.EventSourcing.EventStore
                 Directory.CreateDirectory(EventStoreFilePaths.Root);
         }
 
-        private void TruncateJournalFile(EventStoreFilePaths paths)
+        private void TruncateFile(JournalFilePath path)
         {
-            using (var fs = File.Open(paths.JournalFile, FileMode.Truncate)) { };
+            using (var fs = File.Open(path.Value, FileMode.Truncate)) { };
         }
 
         private void EnsurePathsExist(EventStoreFilePaths paths)
         {
-            if (!File.Exists(paths.DatabaseFile))
-                using (var fs = File.Create(paths.DatabaseFile)) { };
-            if (!File.Exists(paths.JournalFile))
-                using (var fs = File.Create(paths.JournalFile)) { };
+            if (!File.Exists(paths.DatabaseFile.Value))
+                using (var fs = File.Create(paths.DatabaseFile.Value)) { };
+            if (!File.Exists(paths.JournalFile.Value))
+                using (var fs = File.Create(paths.JournalFile.Value)) { };
         }
 
-        private void EnsureJournalFileEmpty(EventStoreFilePaths paths)
+        private void EnsureFileEmpty(JournalFilePath path)
         {
-            var fi = new FileInfo(paths.JournalFile);
+            var fi = new FileInfo(path.Value);
 
             if (fi.Length > 0)
                 throw new CorruptionException("Journal file not empty, restore the eventstore first.");
