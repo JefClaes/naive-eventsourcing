@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.AccessControl;
 
 namespace Naive.EventSourcing.EventStore
 {
@@ -18,7 +19,7 @@ namespace Naive.EventSourcing.EventStore
         public FileEventStore(Assembly assembly)
         {
             _assembly = assembly;
-        }        
+        }     
 
         public void Create(Guid aggregateId, EventStream eventStream)
         {
@@ -46,7 +47,7 @@ namespace Naive.EventSourcing.EventStore
                     throw new OptimisticConcurrencyException(currentVersion, expectedVersion);
 
                 EnsureJournalFileEmpty(paths.JournalFile);
-                WriteEventStreamToFile(eventStream, aggregateId, paths.JournalFile.Value, currentVersion);
+                WriteCurrentVersionToJournalFile(paths.JournalFile, currentVersion);
                 WriteEventStreamToFile(eventStream, aggregateId, paths.DatabaseFile.Value, currentVersion);
                 TruncateJournalFile(paths.JournalFile);
             }
@@ -90,8 +91,7 @@ namespace Naive.EventSourcing.EventStore
             return currentVersion;
         }
 
-        private void WriteEventStreamToFile(
-            EventStream eventStream, Guid aggregateId, string path, int currentVersion)
+        private void WriteEventStreamToFile(EventStream eventStream, Guid aggregateId, string path, int currentVersion)
         {
             using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
             {
@@ -103,6 +103,18 @@ namespace Naive.EventSourcing.EventStore
 
                         streamWriter.WriteLine(new Record(aggregateId, @event, currentVersion).Serialized());
                     }
+                }
+            }
+        }
+
+        private void WriteCurrentVersionToJournalFile(JournalFilePath path, int currentVersion)
+        {
+            // atomic operation
+            using (var stream = new FileStream(path.Value, FileMode.Append, FileSystemRights.AppendData, FileShare.None, 4096, FileOptions.None))
+            {
+                using (var streamWriter = new StreamWriter(stream))
+                {
+                    streamWriter.WriteLine(currentVersion.ToString("000000000"));
                 }
             }
         }
