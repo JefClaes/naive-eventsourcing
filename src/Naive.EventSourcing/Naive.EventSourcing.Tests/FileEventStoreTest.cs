@@ -218,6 +218,13 @@ namespace Naive.EventSourcing.Tests
             File.Exists(EventStoreFilePaths.From(_aggregateId).JournalFile);
         }
 
+        [TestMethod]
+        public void TheJournalFileIsTruncatedAfterwards()
+        {
+            var fi = new FileInfo(EventStoreFilePaths.From(_aggregateId).JournalFile);
+            Assert.AreEqual(0, fi.Length);
+        }
+
         private class ConcurrencyTestEvent : IEvent { }
     }
 

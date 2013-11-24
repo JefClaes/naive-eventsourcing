@@ -45,18 +45,9 @@ namespace Naive.EventSourcing.EventStore
                 if (currentVersion != expectedVersion)
                     throw new OptimisticConcurrencyException(currentVersion, expectedVersion);
 
-                using (var stream = new FileStream(paths.DatabaseFile, FileMode.Append, FileAccess.Write, FileShare.Read))
-                {
-                    using (var streamWriter = new StreamWriter(stream))
-                    {
-                        foreach (var @event in eventStream)
-                        {
-                            currentVersion++;
-
-                            streamWriter.WriteLine(new Record(aggregateId, @event, currentVersion).Serialized());
-                        }
-                    }
-                }
+                WriteEventStreamToFile(eventStream, aggregateId, paths.JournalFile, currentVersion);
+                WriteEventStreamToFile(eventStream, aggregateId, paths.DatabaseFile, currentVersion);
+                TruncateJournalFile(paths);
             }
         }
 
@@ -98,10 +89,32 @@ namespace Naive.EventSourcing.EventStore
             return currentVersion;
         }
 
+        private void WriteEventStreamToFile(
+            EventStream eventStream, Guid aggregateId, string path, int currentVersion)
+        {
+            using (var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
+            {
+                using (var streamWriter = new StreamWriter(stream))
+                {
+                    foreach (var @event in eventStream)
+                    {
+                        currentVersion++;
+
+                        streamWriter.WriteLine(new Record(aggregateId, @event, currentVersion).Serialized());
+                    }
+                }
+            }
+        }
+
         private void EnsureRootDirectoryExists()
         {
             if (!Directory.Exists(EventStoreFilePaths.Root))
                 Directory.CreateDirectory(EventStoreFilePaths.Root);
+        }
+
+        private void TruncateJournalFile(EventStoreFilePaths paths)
+        {
+            using (var fs = File.Open(paths.JournalFile, FileMode.Truncate)) { };
         }
 
         private void EnsurePathsExist(EventStoreFilePaths paths)
