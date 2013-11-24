@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,7 +18,21 @@ namespace Naive.EventSourcing.EventStore
         public FileEventStore(Assembly assembly)
         {
             _assembly = assembly;
-        }     
+        }
+
+        public void Restore()
+        {
+            var hotJournals = Directory
+                .GetFiles(EventStoreFilePaths.Root, JournalFilePath.SearchPattern)
+                .Select(x => new FileInfo(x))
+                .Where(x => x.Length > 0);
+
+            foreach (var journal in hotJournals)
+            {
+                // go to database file
+                // delete each event after 
+            }
+        }
 
         public void Create(Guid aggregateId, EventStream eventStream)
         {
@@ -42,7 +55,6 @@ namespace Naive.EventSourcing.EventStore
                 EnsurePathsExist(paths);
 
                 var currentVersion = GetCurrentVersion(paths.DatabaseFile);
-
                 if (currentVersion != expectedVersion)
                     throw new OptimisticConcurrencyException(currentVersion, expectedVersion);
 

@@ -6,7 +6,9 @@ using System.Text;
 namespace Naive.EventSourcing.EventStore
 {
     public interface IEventStore
-    {       
+    {
+        void Restore();
+
         void Create(Guid aggregateId, EventStream eventStream);
 
         void Append(Guid aggregateId, EventStream eventStream, int expectedVersion);

@@ -28,7 +28,7 @@ namespace Naive.EventSourcing.EventStore
         public static EventStoreFilePaths From(Guid aggregateId)
         {
             var databaseFile = Path.Combine(Root, string.Concat(aggregateId, ".txt"));
-            var journalFile = Path.Combine(Root, string.Concat(aggregateId, ".journal.txt"));
+            var journalFile = Path.Combine(Root, string.Concat(aggregateId, ".", JournalFilePath.Suffix));
 
             return new EventStoreFilePaths(databaseFile, journalFile);
         }
@@ -72,6 +72,8 @@ namespace Naive.EventSourcing.EventStore
     {
         private readonly string _value;
 
+        public const string Suffix = "journal.txt";
+
         public JournalFilePath(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -83,6 +85,11 @@ namespace Naive.EventSourcing.EventStore
         public string Value
         {
             get { return _value; }
+        }
+
+        public static string SearchPattern
+        {
+            get { return "*." + Suffix; }
         }
 
         public override bool Equals(object obj)
