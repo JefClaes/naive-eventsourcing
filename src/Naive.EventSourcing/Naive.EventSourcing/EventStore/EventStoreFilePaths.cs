@@ -10,15 +10,15 @@ namespace Naive.EventSourcing.EventStore
     {
         public const string Root = @"C:\EventStore";
 
-        private EventStoreFilePaths(string databaseFile, string journalFile)
+        private EventStoreFilePaths(DatabaseFilePath databaseFile, JournalFilePath journalFile)
         {
-            if (string.IsNullOrEmpty(databaseFile))
+            if (databaseFile == null)
                 throw new ArgumentNullException("databaseFile");
-            if (string.IsNullOrEmpty(journalFile))
+            if (journalFile == null)
                 throw new ArgumentNullException("journalFile");
 
-            DatabaseFile = new DatabaseFilePath(databaseFile);
-            JournalFile = new JournalFilePath(journalFile);
+            DatabaseFile = databaseFile;
+            JournalFile = journalFile;
         }
 
         public DatabaseFilePath DatabaseFile { get; private set; }
@@ -27,8 +27,8 @@ namespace Naive.EventSourcing.EventStore
 
         public static EventStoreFilePaths From(Guid aggregateId)
         {
-            var databaseFile = Path.Combine(Root, string.Concat(aggregateId, ".txt"));
-            var journalFile = Path.Combine(Root, string.Concat(aggregateId, ".", JournalFilePath.Suffix));
+            var databaseFile = new DatabaseFilePath(Root, aggregateId);
+            var journalFile = new JournalFilePath(Root, aggregateId);
 
             return new EventStoreFilePaths(databaseFile, journalFile);
         }
@@ -36,19 +36,26 @@ namespace Naive.EventSourcing.EventStore
 
     public class DatabaseFilePath
     {
-        private readonly string _value;
-
-        public DatabaseFilePath(string value)
+        private readonly string _value;        
+        
+        public DatabaseFilePath(string root, Guid aggregateId)
         {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException(value);
-
-            _value = value;
+            _value = Path.Combine(root, aggregateId.ToString() + ".txt");
         }
 
         public string Value
         {
             get { return _value; }
+        }
+
+        public string ToRestorePath()
+        {
+            return Value + ".restore";
+        }
+
+        public string ToCompletedRestorePath()
+        {
+            return Value + ".restore_complete";
         }
 
         public override bool Equals(object obj)
@@ -71,15 +78,14 @@ namespace Naive.EventSourcing.EventStore
     public class JournalFilePath
     {
         private readonly string _value;
+        private readonly string _root;
 
-        public const string Suffix = "journal.txt";
+        public const string Suffix = ".journal.txt";
 
-        public JournalFilePath(string value)
+        public JournalFilePath(string root, Guid aggregateId)
         {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException(value);
-
-            _value = value;
+            _value = Path.Combine(root, aggregateId.ToString() + Suffix);
+            _root = root;
         }
 
         public string Value
@@ -90,6 +96,23 @@ namespace Naive.EventSourcing.EventStore
         public static string SearchPattern
         {
             get { return "*." + Suffix; }
+        }
+
+        public DatabaseFilePath ToDatabaseFilePath()
+        {
+            var aggregateId = _value.Substring(_value.LastIndexOf(@"/"), _value.LastIndexOf(Suffix));
+
+            return new DatabaseFilePath(_root, Guid.Parse(aggregateId));
+        }
+
+        public static JournalFilePath Parse(string value)
+        {
+            if (!value.EndsWith(Suffix))
+                throw new ArgumentOutOfRangeException("value");
+
+            var aggregateId = Guid.Parse(value.Substring(0, value.IndexOf(Suffix)));
+
+            return new JournalFilePath(EventStoreFilePaths.Root, aggregateId);
         }
 
         public override bool Equals(object obj)

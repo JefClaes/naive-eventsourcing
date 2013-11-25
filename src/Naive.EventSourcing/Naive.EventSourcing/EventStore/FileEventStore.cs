@@ -10,6 +10,11 @@ namespace Naive.EventSourcing.EventStore
     {     
         private Assembly _assembly;
 
+        static FileEventStore()
+        {
+            EnsureRootDirectoryExists();
+        }
+
         public FileEventStore()
         {
             _assembly = GetType().Assembly;
@@ -29,8 +34,31 @@ namespace Naive.EventSourcing.EventStore
 
             foreach (var journal in hotJournals)
             {
-                // go to database file
-                // delete each event after 
+                var journalFilePath = JournalFilePath.Parse(journal.FullName);
+                var databaseFilePath = journalFilePath.ToDatabaseFilePath();
+
+                if (File.Exists(databaseFilePath.ToCompletedRestorePath()))
+                    File.Move(databaseFilePath.ToCompletedRestorePath(), databaseFilePath.Value);
+                
+                var currentVersion = GetCurrentVersion(databaseFilePath);
+
+                var allLines = File.ReadAllLines(databaseFilePath.Value)
+                    .Where(x => x.EndsWith(Record.EOR))
+                    .Select(x => Record.Deserialize(x, _assembly))
+                    .Where(x => x.Version <= currentVersion);                
+
+                using (var stream = new FileStream(databaseFilePath.ToRestorePath(), FileMode.CreateNew, FileAccess.Write))
+                {
+                    using (var writer = new StreamWriter(stream))
+                    {
+                        foreach (var line in allLines)
+                            writer.WriteLine(line);                        
+                    }                 
+                }
+
+                File.Move(databaseFilePath.ToRestorePath(), databaseFilePath.ToCompletedRestorePath());
+                File.Delete(databaseFilePath.Value);
+                File.Move(databaseFilePath.ToCompletedRestorePath(), databaseFilePath.Value);                    
             }
         }
 
@@ -46,9 +74,7 @@ namespace Naive.EventSourcing.EventStore
 
         private void CreateOrAppend(Guid aggregateId, EventStream eventStream, int expectedVersion)
         {
-            var paths = EventStoreFilePaths.From(aggregateId);
-
-            EnsureRootDirectoryExists();
+            var paths = EventStoreFilePaths.From(aggregateId);         
 
             lock (Lock.For(aggregateId))
             {
@@ -130,7 +156,7 @@ namespace Naive.EventSourcing.EventStore
             }
         }
 
-        private void EnsureRootDirectoryExists()
+        private static void EnsureRootDirectoryExists()
         {
             if (!Directory.Exists(EventStoreFilePaths.Root))
                 Directory.CreateDirectory(EventStoreFilePaths.Root);

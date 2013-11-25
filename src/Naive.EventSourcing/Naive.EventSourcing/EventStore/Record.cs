@@ -7,6 +7,7 @@ namespace Naive.EventSourcing.EventStore
     public class Record
     {
         private const string Seperator = "+++";
+        public const string EOR = "_EOR_";
 
         public Record(Guid aggregateId, IEvent @event, int version)
         {
@@ -26,7 +27,7 @@ namespace Naive.EventSourcing.EventStore
 
         public string Serialized()
         {
-            return string.Join(Seperator, new object[] { AggregateId, Version, Event.GetType(), JsonConvert.SerializeObject(Event) });            
+            return string.Join(Seperator, new object[] { AggregateId, Version, Event.GetType(), JsonConvert.SerializeObject(Event), EOR });            
         }
 
         public static Record Deserialize(string value, Assembly assembly)
